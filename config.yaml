@@ -1,0 +1,152 @@
+version: 1.0.0
+
+# global env provided to all tasks:
+# BUILD_STATUS - previous task status, if none - 0
+#  0 - ok, otherwise error code from last task (non zero exit code)
+#
+# BASE_BRANCH
+# BASE_SHA
+# BASE_REPO_FULL_NAME
+# HEAD_BRANCH
+# HEAD_SHA
+# HEAD_REPO_FULL_NAME
+
+# ignored, but part of schema
+templates:
+  build_flutter: &build_flutter
+    queue_mode: restart
+      # restart - stop task and mark it failed
+      # queue (default) - add to queue
+
+
+    tasks:
+      # if task errors execution skips until on_error encountered
+      # then execution state is reset
+      # that means if there was no error in on_error block then blocks after it
+      # will execute, or if error occurred in on_error block we continue to next
+      # on_error, so you can catch if on_error errors.
+      - name: commit pending
+        script: # String or Object.
+          - echo applying checks1
+          - builtin_action:
+              name: apply_check_status # Discriminator key.
+              options:
+                check_status:
+                  state: pending # Required. Enum: error, failure, pending, success.
+                  context: ci_test/Build # Optional
+                  description: null # Optional. String
+                  target_url: null # Optional. String, url
+      - name: telegram initial message
+        script:
+          - builtin_action:
+              name: tg_msg
+              options:
+                chat_id: -4059563862
+                type: msg
+                message: |
+                  Build started
+                  in %HEAD_REPO_FULL_NAME%
+                  on %HEAD_BRANCH%
+                  at %HEAD_SHA%
+      - name: clone repo
+        script:
+          - git clone https://github.com/%HEAD_REPO_FULL_NAME%.git .
+          - git branch %HEAD_BRANCH%
+          - git reset --hard %HEAD_SHA%
+      - name: build
+        # on_error: false # Implicit
+        env:
+          - BUILD_MODE=release # Only valid format.
+        script:
+          - echo something
+          - flutter build apk --%BUILD_MODE% > build_logs.txt
+      - name: collect artifacts
+        script:
+          - builtin_action:
+              name: collect_artifacts
+              options:
+                files: # String or Object.
+                  - build_logs.txt
+                  - file:
+                      path: build\app\outputs\flutter-apk\app-release.apk # Required.
+                      name: AppRelease.apk # Optional.
+                      # store: false # Implicit.
+                        # true -> marks file as artifact and copies file to working_directory/__artifacts folder.
+                        # false -> marks file as artifact without copying it.
+                      caption: Release file. # Optional.
+      - name: On error
+        on_error: true
+        script:
+          - echo ERROR!
+          - builtin_action:
+              name: tg_msg
+              options:
+                chat_id: -4059563862 # Required.
+                type: post_error_log # Required.
+                # use_reply: true # Implicit.
+                  #Reply to first Telegram message in Job.
+                message: | # Optional. Exist for all types.
+                  Prefix to post error log message
+                  new line will be added automatically here >
+          - builtin_action:
+              name: apply_check_status
+              options:
+                check_status:
+                  state: failure
+                  context: ci_test/Build
+                  description: Build failed.
+          - 'false'
+      - name: After build
+        script:
+          - |
+            echo Build done with: %BUILD_STATUS%
+          - builtin_action:
+              name: tg_msg
+              options:
+                chat_id: -4059563862
+                type: post_artifacts
+          - builtin_action:
+              name: apply_check_status
+              options:
+                check_status:
+                  state: success
+                  context: ci_test/Build
+                  description: Build done.
+
+
+jobs:
+  build_master:
+    working_directory: build_master # Required.
+      # Can be absolute.
+    artifacts_directory: release_artifacts # Default '__artifacts'.
+      # Relative to working_directory or absolute.
+    # env_mode: inherit # Implicit. Enum: replace, inherit.
+    env: # Optional.
+      - TOKEN=123
+    events: # Required
+      - push_commit:
+          head: # Branches where commit originates.
+            - master # Glob pattern.
+    <<: *build_flutter
+
+  build_prs:
+    working_directory: build_dev
+    env: # Optional.
+      - TOKEN=123
+    events:
+      - local_review:
+          head: # From.
+            - dev/*
+            - greed
+          base: # Optional. Into.
+            - master
+    <<: *build_flutter
+
+  build_dev_branches:
+    working_directory: build_dev
+    events:
+      - push_commit:
+          head: # Branches where commit originates.
+            - dev/*
+            - qa/{master,dev}
+    <<: *build_flutter
