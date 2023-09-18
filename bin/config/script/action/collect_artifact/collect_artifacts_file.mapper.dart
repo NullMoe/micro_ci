@@ -42,7 +42,7 @@ class ActionCollectArtifactsFileMapper
   };
 
   @override
-  final MappingHook hook = const ActionCollectArtifactsFileHook();
+  final MappingHook hook = const _ActionCollectArtifactsFileHook();
   static ActionCollectArtifactsFile _instantiate(DecodingData data) {
     return ActionCollectArtifactsFile(
         path: data.dec(_f$path), store: data.dec(_f$store));
@@ -191,7 +191,7 @@ class ActionCollectArtifactsFileObjectMapper
   @override
   final MappingHook hook = const FieldUnwrappingHook('file');
   @override
-  final MappingHook superHook = const ActionCollectArtifactsFileHook();
+  final MappingHook superHook = const _ActionCollectArtifactsFileHook();
 
   static ActionCollectArtifactsFileObject _instantiate(DecodingData data) {
     return ActionCollectArtifactsFileObject(
@@ -350,7 +350,7 @@ class ActionCollectArtifactsFileStringMapper
       ActionCollectArtifactsFileMapper.ensureInitialized();
 
   @override
-  final MappingHook superHook = const ActionCollectArtifactsFileHook();
+  final MappingHook superHook = const _ActionCollectArtifactsFileHook();
 
   static ActionCollectArtifactsFileString _instantiate(DecodingData data) {
     return ActionCollectArtifactsFileString(

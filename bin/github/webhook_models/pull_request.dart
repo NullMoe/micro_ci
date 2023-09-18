@@ -6,9 +6,7 @@ import 'user.dart';
 part 'pull_request.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class WebHookPullRequest with WebHookPullRequestMappable {
   const WebHookPullRequest({
     required this.url,

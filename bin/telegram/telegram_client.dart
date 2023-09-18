@@ -47,7 +47,7 @@ class TelegramClient {
     );
 
     final response = await Response.fromStream(await _client.send(request));
-
+    // TODO: check response for errors
     return TelegramResponse<TelegramMessage>.parse(response.body).result;
   }
 

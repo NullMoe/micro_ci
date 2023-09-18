@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
@@ -9,12 +10,12 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:yaml/yaml.dart';
 
 import 'config/config.dart';
-import 'events/handle_push_event.dart';
-import 'events/handle_review_event.dart';
+import 'job_runner/run_job.dart';
 import 'server_config.dart';
 import 'telegram/models/message.dart';
 import 'telegram/models/response.dart';
 
+final logger = Logger();
 
 late final ServerConfig serverConfig;
 
@@ -68,15 +69,24 @@ Future<Response> _eventHandler(Request req) async {
   if (req.url.queryParameters['token'] != serverConfig.ciToken)
     return Response(403);
 
-  final body = await req.readAsString();
+  final eventName = req.headers['x-github-event'];
+  if (eventName == null)
+    return Response(400);
 
-  switch (req.headers['x-github-event']) {
-    case 'push':
-      unawaited(handlePushEvent(body));
-    case 'pull_request_review':
-      unawaited(handleReviewEvent(body));
-    default:
-      return Response(418);
+  final payload = await req.readAsString();
+
+  // TODO: this should be method of Server class or something.
+  for (final MapEntry(key: name, value: job) in config.jobs.entries) {
+    try {
+      unawaited(runJob(
+        name: name,
+        job: job,
+        arguments: job.eventHandler.handleEvent(eventName, payload),
+      ),);
+    } catch (e) {
+      logger.e(e);
+    }
+    // TODO: result is important
   }
 
   return Response(200);

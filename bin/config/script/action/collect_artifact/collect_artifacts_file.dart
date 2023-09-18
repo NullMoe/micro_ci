@@ -4,11 +4,13 @@ import 'package:path/path.dart';
 import '../../../../tools/field_unwrapping_hook.dart';
 
 part 'collect_artifacts_file.mapper.dart';
+part 'artifact_file_types/collect_artifacts_file_object.dart';
+part 'artifact_file_types/collect_artifacts_file_string.dart';
 
 
 @MappableClass(
   discriminatorKey: 'file',
-  hook: ActionCollectArtifactsFileHook(),
+  hook: _ActionCollectArtifactsFileHook(),
 )
 class ActionCollectArtifactsFile with ActionCollectArtifactsFileMappable {
   const ActionCollectArtifactsFile({
@@ -27,36 +29,10 @@ class ActionCollectArtifactsFile with ActionCollectArtifactsFileMappable {
   }
 }
 
-@MappableClass(
-  discriminatorValue: MappableClass.useAsDefault,
-  hook: FieldUnwrappingHook('file'),
-)
-class ActionCollectArtifactsFileObject extends ActionCollectArtifactsFile with ActionCollectArtifactsFileObjectMappable {
-  const ActionCollectArtifactsFileObject({
-    required super.path,
-    super.store,
-    this.name,
-    this.caption,
-  });
-
-  final String? name;
-  final String? caption;
-}
-
-@MappableClass(
-  discriminatorValue: null,
-)
-class ActionCollectArtifactsFileString extends ActionCollectArtifactsFile with ActionCollectArtifactsFileStringMappable {
-  const ActionCollectArtifactsFileString({
-    required super.path,
-    super.store,
-  });
-}
-
 // Hooks
 
-class ActionCollectArtifactsFileHook extends MappingHook {
-  const ActionCollectArtifactsFileHook();
+class _ActionCollectArtifactsFileHook extends MappingHook {
+  const _ActionCollectArtifactsFileHook();
 
   @override
   Object? beforeDecode(Object? value) {

@@ -2,25 +2,13 @@
 
 import 'package:dart_mappable/dart_mappable.dart';
 
+import 'author_association.dart';
 import 'user.dart';
 
 part 'review.mapper.dart';
 
-@MappableEnum()
-enum AuthorAssociation {
-  COLLABORATOR,
-  CONTRIBUTOR,
-  FIRST_TIMER,
-  FIRST_TIME_CONTRIBUTOR,
-  MANNEQUIN,
-  MEMBER,
-  NONE,
-  OWNER,
-}
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class WebHookReview with WebHookReviewMappable {
   WebHookReview({
     required this.authorAssociation,

@@ -1,18 +1,15 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
+// TODO: api_models.dart
 import '../api_models/author.dart';
-import '../api_models/check_status.dart';
 import '../api_models/commit.dart';
-import '../github_client.dart';
 import 'repository.dart';
 import 'user.dart';
 
 part 'push.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class WebHookPush with WebHookPushMappable {
   const WebHookPush({
     required this.after,
@@ -45,9 +42,6 @@ class WebHookPush with WebHookPushMappable {
   final String ref;
   final WebHookRepository repository;
   final WebHookUser? sender;
-
-  Future<String> setStatus(GitHubClient client, CheckStatus status) =>
-    client.createCommitStatus(repository.fullName, after, status);
 
   String get branchName => ref.split('/').sublist(2).join('/');
 }

@@ -24,29 +24,30 @@ class AuthorMapper extends ClassMapperBase<Author> {
   @override
   final String id = 'Author';
 
-  static String? _$date(Author v) => v.date;
-  static const Field<Author, String> _f$date = Field('date', _$date);
-  static String? _$email(Author v) => v.email;
-  static const Field<Author, String> _f$email = Field('email', _$email);
   static String _$name(Author v) => v.name;
   static const Field<Author, String> _f$name = Field('name', _$name);
+  static String? _$date(Author v) => v.date;
+  static const Field<Author, String> _f$date = Field('date', _$date, opt: true);
+  static String? _$email(Author v) => v.email;
+  static const Field<Author, String> _f$email =
+      Field('email', _$email, opt: true);
   static String? _$username(Author v) => v.username;
   static const Field<Author, String> _f$username =
-      Field('username', _$username);
+      Field('username', _$username, opt: true);
 
   @override
   final Map<Symbol, Field<Author, dynamic>> fields = const {
+    #name: _f$name,
     #date: _f$date,
     #email: _f$email,
-    #name: _f$name,
     #username: _f$username,
   };
 
   static Author _instantiate(DecodingData data) {
     return Author(
+        name: data.dec(_f$name),
         date: data.dec(_f$date),
         email: data.dec(_f$email),
-        name: data.dec(_f$name),
         username: data.dec(_f$username));
   }
 
@@ -98,7 +99,7 @@ extension AuthorValueCopy<$R, $Out> on ObjectCopyWith<$R, Author, $Out> {
 
 abstract class AuthorCopyWith<$R, $In extends Author, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? date, String? email, String? name, String? username});
+  $R call({String? name, String? date, String? email, String? username});
   AuthorCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -110,21 +111,21 @@ class _AuthorCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Author, $Out>
   late final ClassMapperBase<Author> $mapper = AuthorMapper.ensureInitialized();
   @override
   $R call(
-          {Object? date = $none,
+          {String? name,
+          Object? date = $none,
           Object? email = $none,
-          String? name,
           Object? username = $none}) =>
       $apply(FieldCopyWithData({
+        if (name != null) #name: name,
         if (date != $none) #date: date,
         if (email != $none) #email: email,
-        if (name != null) #name: name,
         if (username != $none) #username: username
       }));
   @override
   Author $make(CopyWithData data) => Author(
+      name: data.get(#name, or: $value.name),
       date: data.get(#date, or: $value.date),
       email: data.get(#email, or: $value.email),
-      name: data.get(#name, or: $value.name),
       username: data.get(#username, or: $value.username));
 
   @override

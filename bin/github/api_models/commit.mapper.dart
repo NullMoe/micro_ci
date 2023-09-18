@@ -48,9 +48,6 @@ class CommitMapper extends ClassMapperBase<Commit> {
   static String _$timestamp(Commit v) => v.timestamp;
   static const Field<Commit, String> _f$timestamp =
       Field('timestamp', _$timestamp);
-  static String _$treeId(Commit v) => v.treeId;
-  static const Field<Commit, String> _f$treeId =
-      Field('treeId', _$treeId, key: 'tree_id');
   static String _$url(Commit v) => v.url;
   static const Field<Commit, String> _f$url = Field('url', _$url);
 
@@ -65,7 +62,6 @@ class CommitMapper extends ClassMapperBase<Commit> {
     #modified: _f$modified,
     #removed: _f$removed,
     #timestamp: _f$timestamp,
-    #treeId: _f$treeId,
     #url: _f$url,
   };
 
@@ -80,7 +76,6 @@ class CommitMapper extends ClassMapperBase<Commit> {
         modified: data.dec(_f$modified),
         removed: data.dec(_f$removed),
         timestamp: data.dec(_f$timestamp),
-        treeId: data.dec(_f$treeId),
         url: data.dec(_f$url));
   }
 
@@ -147,7 +142,6 @@ abstract class CommitCopyWith<$R, $In extends Commit, $Out>
       List<String>? modified,
       List<String>? removed,
       String? timestamp,
-      String? treeId,
       String? url});
   CommitCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -189,7 +183,6 @@ class _CommitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Commit, $Out>
           List<String>? modified,
           List<String>? removed,
           String? timestamp,
-          String? treeId,
           String? url}) =>
       $apply(FieldCopyWithData({
         if (added != $none) #added: added,
@@ -201,7 +194,6 @@ class _CommitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Commit, $Out>
         if (modified != null) #modified: modified,
         if (removed != null) #removed: removed,
         if (timestamp != null) #timestamp: timestamp,
-        if (treeId != null) #treeId: treeId,
         if (url != null) #url: url
       }));
   @override
@@ -215,7 +207,6 @@ class _CommitCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Commit, $Out>
       modified: data.get(#modified, or: $value.modified),
       removed: data.get(#removed, or: $value.removed),
       timestamp: data.get(#timestamp, or: $value.timestamp),
-      treeId: data.get(#treeId, or: $value.treeId),
       url: data.get(#url, or: $value.url));
 
   @override

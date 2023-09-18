@@ -5,7 +5,6 @@ import 'check_status_state.dart';
 part 'check_status.mapper.dart';
 
 @MappableClass(
-  caseStyle: CaseStyle.snakeCase,
   hook: EmptyToNullHook(),
 )
 class CheckStatus with CheckStatusMappable {

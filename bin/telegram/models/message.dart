@@ -3,9 +3,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 part 'message.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class TelegramMessage with TelegramMessageMappable {
   const TelegramMessage({
     required this.id,

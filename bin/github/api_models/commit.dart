@@ -5,9 +5,7 @@ import 'author.dart';
 part 'commit.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class Commit with CommitMappable {
   const Commit({
     required this.added,
@@ -19,7 +17,6 @@ class Commit with CommitMappable {
     required this.modified,
     required this.removed,
     required this.timestamp,
-    required this.treeId,
     required this.url,
   });
 
@@ -35,6 +32,7 @@ class Commit with CommitMappable {
   /// Whether this commit is distinct from any that have been pushed before.
   final String distinct;
 
+  /// Commit SHA.
   final String id;
 
   /// The commit message.
@@ -48,8 +46,6 @@ class Commit with CommitMappable {
 
   /// The ISO 8601 timestamp of the commit.
   final String timestamp;
-
-  final String treeId;
 
   /// URL that points to the commit API resource.
   final String url;

@@ -3,9 +3,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 part 'repository.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class WebHookRepository with WebHookRepositoryMappable {
   const WebHookRepository({
     required this.id,

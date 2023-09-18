@@ -8,7 +8,7 @@ class TelegramResponse<T> with TelegramResponseMappable<T> {
   const TelegramResponse({required this.ok, required this.result});
 
   factory TelegramResponse.parse(String json) =>
-    MapperContainer.globals.fromJson<TelegramResponse<T>>(json);
+    MapperContainer.globals.fromJson(json);
 
   final bool ok;
   final T result;

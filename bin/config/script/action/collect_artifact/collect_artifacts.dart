@@ -16,6 +16,7 @@ class ActionCollectArtifacts extends ActionBuiltinScript with ActionCollectArtif
     Future.wait([
       for (final file in files)
         if (file.store)
-          File(join(workingDirectory.path, file.path)).copy(join(artifactStore.path,  basename(file.path))),
+          File(join(workingDirectory.path, file.path))
+            .copy(join(artifactStore.path, basename(file.path))),
     ]);
 }

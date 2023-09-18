@@ -3,44 +3,35 @@ import 'dart:io';
 import 'dart:isolate';
 
 import '../clients.dart';
-import '../config/job.dart';
-import '../config/scripts/action/collect_artifact/collect_artifacts_file.dart';
-import '../config/scripts/script.dart';
+import '../config/models.dart';
+import '../config/script/action/collect_artifact/collect_artifacts_file.dart';
+import '../server.dart';
+import 'job_runner_arguments.dart';
+import '../tools/list_of_strings_to_map.dart';
 
-
-// Can be used to run Isolate in future.
-typedef RunInitialParameters = ({
-  String headBranch,
-  String headRepoFullName,
-  String headSha,
-  String? baseBranch,
-  String? baseRepoFullName,
-  String? baseSha,
-  String jobName,
-  Job job,
-});
 
 final Map<String, List<Isolate>> jobsQueue = {};
 
-void _log(IOSink sink, RunInitialParameters runParameters, String message) =>
-  sink.writeln('run(${runParameters.jobName}): $message');
 
 String subStituteEnvironmentVariables(Map<String, String> env, String string) =>
   string.replaceAllMapped(RegExp('%([A-Za-z0-9_-]+)%'),
     (match) => env[match.group(1)] ?? '%${match.group(1)}%',
   );
 
-Future<void> run(RunInitialParameters parameters) async {
-  final RunInitialParameters(
-    :job,
-    :jobName,
+// TODO: convert to modern coding standarts with singleton class JobRunner.
+Future<void> runJob({
+  required String name,
+  required Job job,
+  required JobRunnerArguments arguments,
+}) async {
+  final JobRunnerArguments(
     :baseBranch,
     :baseSha,
     :baseRepoFullName,
     :headBranch,
     :headSha,
     :headRepoFullName,
-  ) = parameters;
+  ) = arguments;
 
   // TODO: Mappable class with all run context.
   var error = 0;
@@ -55,7 +46,7 @@ Future<void> run(RunInitialParameters parameters) async {
         scriptN++;
         final environment = {
           ...job.environmentVariables,
-          ...task.environmentVariables,
+          ...task.env.splitToMap('='), // TODO: there might be an error
           'BUILD_STATUS': '$error',
           'BASE_BRANCH': baseBranch ?? '',
           'BASE_SHA': baseSha ?? '',
@@ -67,11 +58,11 @@ Future<void> run(RunInitialParameters parameters) async {
 
         switch (script) {
           case Command():
-            job.ioDirectory.createSync();
+            job.directory.createSync();
 
             final processResult = await Process.run(script.command, [],
               runInShell: true,
-              workingDirectory: job.ioDirectory.path,
+              workingDirectory: job.directory.path,
               stdoutEncoding: utf8,
               stderrEncoding: utf8,
               environment: environment,
@@ -122,8 +113,8 @@ Future<void> run(RunInitialParameters parameters) async {
                   media: artifacts.map(
                     (file) => (
                       path: file.getAbsolutePath(
-                        job.ioDirectory.path,
-                        job.ioArtifactsDirectory.path,
+                        job.directory.path,
+                        job.artifacts.path,
                       ),
                       name: file is ActionCollectArtifactsFileObject ?
                         file.name :
@@ -136,16 +127,17 @@ Future<void> run(RunInitialParameters parameters) async {
                 );
 
                 await for (final _ in responseStream) {
-
+                  logger.i(_);
                 }
             }
-          case ActionApplyCheckStatus():
-            await script.execute(gitHubClient, headSha, headRepoFullName);
+          case ActionApplyCheckStatus(:final checkStatus):
+            await gitHubClient
+              .createCommitStatus(headRepoFullName, headSha, checkStatus);
           case ActionCollectArtifacts(:final files):
             artifacts.addAll(files);
-            await script.execute(job.ioDirectory, job.ioArtifactsDirectory);
+            await script.execute(job.directory, job.artifacts);
           case ActionUnknownBuiltinScript():
-            _log(stdout, parameters, 'WARNING! Unknown script was presented in job: $jobName, task: ${task.name}, scriptN: $scriptN!');
+            // _log(stdout, parameters, 'WARNING! Unknown script was presented in job: $jobName, task: ${task.name}, scriptN: $scriptN!');
         }
       }
     }

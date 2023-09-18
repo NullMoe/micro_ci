@@ -3,9 +3,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 part 'user.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class WebHookUser with WebHookUserMappable {
   WebHookUser({
     required this.login,

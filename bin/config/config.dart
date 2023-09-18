@@ -5,9 +5,7 @@ import 'job.dart';
 part 'config.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class Config with ConfigMappable {
   const Config({
     required this.version,

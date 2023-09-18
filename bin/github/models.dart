@@ -1,10 +1,2 @@
-export 'api_models/author.dart';
-export 'api_models/check_status.dart';
-export 'api_models/check_status_state.dart';
-export 'api_models/commit.dart';
-export 'webhook_models/pull_request.dart';
-export 'webhook_models/pull_request_review.dart';
-export 'webhook_models/push.dart';
-export 'webhook_models/repository.dart';
-export 'webhook_models/review.dart';
-export 'webhook_models/user.dart';
+export 'api_models/api_models.dart';
+export 'webhook_models/webhook_models.dart';

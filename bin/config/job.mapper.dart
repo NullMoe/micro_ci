@@ -48,6 +48,9 @@ class JobMapper extends ClassMapperBase<Job> {
   static OnQueue _$onQueue(Job v) => v.onQueue;
   static const Field<Job, OnQueue> _f$onQueue = Field('onQueue', _$onQueue,
       key: 'on_queue', opt: true, def: OnQueue.restart);
+  static GitHubEventHandler _$eventHandler(Job v) => v.eventHandler;
+  static const Field<Job, GitHubEventHandler> _f$eventHandler =
+      Field('eventHandler', _$eventHandler, mode: FieldMode.member);
 
   @override
   final Map<Symbol, Field<Job, dynamic>> fields = const {
@@ -58,6 +61,7 @@ class JobMapper extends ClassMapperBase<Job> {
     #env: _f$env,
     #envMode: _f$envMode,
     #onQueue: _f$onQueue,
+    #eventHandler: _f$eventHandler,
   };
 
   static Job _instantiate(DecodingData data) {

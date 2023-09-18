@@ -1,13 +1,12 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-import './scripts/script.dart';
+import '../tools/split_string_once.dart';
+import 'script/script.dart';
 
 part 'task.mapper.dart';
 
 
-@MappableClass(
-  caseStyle: CaseStyle.snakeCase,
-)
+@MappableClass()
 class Task with TaskMappable {
   const Task({
     required this.name,
@@ -22,13 +21,4 @@ class Task with TaskMappable {
   final List<String> env;
   final bool onError;
   final bool onAny;
-
-  Map<String, String> get environmentVariables => {
-    ...Map.fromEntries(
-      env.map((e) {
-        final pair = e.split('=');
-        return MapEntry(pair.first, pair.sublist(1).join('='));
-      }),
-    ),
-  };
 }

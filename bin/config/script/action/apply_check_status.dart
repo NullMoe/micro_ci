@@ -11,7 +11,4 @@ class ActionApplyCheckStatus extends ActionBuiltinScript with ActionApplyCheckSt
   });
 
   final CheckStatus checkStatus;
-
-  Future<void> execute(GitHubClient client, String sha, String fullName) async =>
-    client.createCommitStatus(fullName, sha, checkStatus);
 }
