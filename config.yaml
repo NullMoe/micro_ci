@@ -14,7 +14,7 @@ version: 1.0.0
 # ignored, but part of schema
 templates:
   build_flutter: &build_flutter
-    on_queue: restart
+    queue_mode: restart
       # restart - stop task and mark it failed
       # queue (default) - add to queue
 

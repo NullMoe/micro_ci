@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 import '../../tools/split_string_once.dart';
 import 'env_mode.dart';
 import 'event/event.dart';
-import 'on_queue.dart';
+import 'queue_mode.dart';
 import 'task.dart';
 
 part 'job.mapper.dart';
@@ -21,12 +21,12 @@ class Job with JobMappable {
     this.artifactsDirectory = '__artifacts',
     this.env = const [],
     this.envMode = EnvMode.inherit,
-    this.onQueue = OnQueue.restart,
+    this.queueMode = QueueMode.restart,
   });
 
   final List<Event> events;
   final List<Task> tasks;
-  final OnQueue onQueue;
+  final QueueMode queueMode;
   final String workingDirectory;
   final String artifactsDirectory;
   final List<String> env;

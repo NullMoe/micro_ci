@@ -1,12 +1,12 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'on_queue.mapper.dart';
+part 'queue_mode.mapper.dart';
 
 
 @MappableEnum(
-  defaultValue: OnQueue.queue,
+  defaultValue: QueueMode.queue,
 )
-enum OnQueue {
+enum QueueMode {
   restart,
   queue,
 }

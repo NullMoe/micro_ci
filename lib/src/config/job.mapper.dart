@@ -15,7 +15,7 @@ class JobMapper extends ClassMapperBase<Job> {
       EventMapper.ensureInitialized();
       TaskMapper.ensureInitialized();
       EnvModeMapper.ensureInitialized();
-      OnQueueMapper.ensureInitialized();
+      QueueModeMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -45,9 +45,10 @@ class JobMapper extends ClassMapperBase<Job> {
   static EnvMode _$envMode(Job v) => v.envMode;
   static const Field<Job, EnvMode> _f$envMode = Field('envMode', _$envMode,
       key: 'env_mode', opt: true, def: EnvMode.inherit);
-  static OnQueue _$onQueue(Job v) => v.onQueue;
-  static const Field<Job, OnQueue> _f$onQueue = Field('onQueue', _$onQueue,
-      key: 'on_queue', opt: true, def: OnQueue.restart);
+  static QueueMode _$queueMode(Job v) => v.queueMode;
+  static const Field<Job, QueueMode> _f$queueMode = Field(
+      'queueMode', _$queueMode,
+      key: 'queue_mode', opt: true, def: QueueMode.restart);
 
   @override
   final Map<Symbol, Field<Job, dynamic>> fields = const {
@@ -57,7 +58,7 @@ class JobMapper extends ClassMapperBase<Job> {
     #artifactsDirectory: _f$artifactsDirectory,
     #env: _f$env,
     #envMode: _f$envMode,
-    #onQueue: _f$onQueue,
+    #queueMode: _f$queueMode,
   };
 
   static Job _instantiate(DecodingData data) {
@@ -68,7 +69,7 @@ class JobMapper extends ClassMapperBase<Job> {
         artifactsDirectory: data.dec(_f$artifactsDirectory),
         env: data.dec(_f$env),
         envMode: data.dec(_f$envMode),
-        onQueue: data.dec(_f$onQueue));
+        queueMode: data.dec(_f$queueMode));
   }
 
   @override
@@ -129,7 +130,7 @@ abstract class JobCopyWith<$R, $In extends Job, $Out>
       String? artifactsDirectory,
       List<String>? env,
       EnvMode? envMode,
-      OnQueue? onQueue});
+      QueueMode? queueMode});
   JobCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -159,7 +160,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
           String? artifactsDirectory,
           List<String>? env,
           EnvMode? envMode,
-          OnQueue? onQueue}) =>
+          QueueMode? queueMode}) =>
       $apply(FieldCopyWithData({
         if (events != null) #events: events,
         if (tasks != null) #tasks: tasks,
@@ -167,7 +168,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
         if (artifactsDirectory != null) #artifactsDirectory: artifactsDirectory,
         if (env != null) #env: env,
         if (envMode != null) #envMode: envMode,
-        if (onQueue != null) #onQueue: onQueue
+        if (queueMode != null) #queueMode: queueMode
       }));
   @override
   Job $make(CopyWithData data) => Job(
@@ -179,7 +180,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
           data.get(#artifactsDirectory, or: $value.artifactsDirectory),
       env: data.get(#env, or: $value.env),
       envMode: data.get(#envMode, or: $value.envMode),
-      onQueue: data.get(#onQueue, or: $value.onQueue));
+      queueMode: data.get(#queueMode, or: $value.queueMode));
 
   @override
   JobCopyWith<$R2, Job, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
