@@ -1,6 +1,6 @@
 import 'package:glob/glob.dart';
-import 'package:micro_ci/micro_ci.dart';
 
+import '../../../micro_ci.dart';
 import '../job_runner_arguments.dart';
 
 

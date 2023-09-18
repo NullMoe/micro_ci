@@ -1,8 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-// TODO: api_models.dart
-import '../api_models/author.dart';
-import '../api_models/commit.dart';
+import '../api_models/api_models.dart';
 import 'repository.dart';
 import 'user.dart';
 
