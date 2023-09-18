@@ -2,25 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:logger/logger.dart';
+import 'package:micro_ci/micro_ci.dart';
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:yaml/yaml.dart';
 
-import 'config/config.dart';
+import 'job_runner/events/github_event_handler.dart';
 import 'job_runner/run_job.dart';
-import 'server_config.dart';
-import 'telegram/models/message.dart';
-import 'telegram/models/response.dart';
+import 'logger.dart';
 
-final logger = Logger();
 
 late final ServerConfig serverConfig;
 
 final configFile = File(join(Directory.current.path, 'config.yaml'));
 late Config config;
+late Map<String, GitHubEventHandler> jobHandlers;
 StreamSubscription<FileSystemEvent>? watcher;
 
 // Configure routes.
@@ -81,7 +79,7 @@ Future<Response> _eventHandler(Request req) async {
       unawaited(runJob(
         name: name,
         job: job,
-        arguments: job.eventHandler.handleEvent(eventName, payload),
+        arguments: jobHandlers[name]!.handleEvent(eventName, payload),
       ),);
     } catch (e) {
       logger.e(e);
@@ -95,6 +93,10 @@ Future<Response> _eventHandler(Request req) async {
 Future<void> initializeConfig() async {
   final configBody = await configFile.readAsString();
   config = ConfigMapper.fromJson(jsonEncode(loadYaml(configBody)));
+  jobHandlers = {
+    for (final MapEntry(key: name, value: job) in config.jobs.entries)
+      name: GitHubEventHandler(job.events),
+  };
 }
 
 Future<void> initializeWatcher() async {

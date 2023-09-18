@@ -2,23 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:micro_ci/micro_ci.dart';
+import 'package:micro_ci/tools/list_of_strings_to_map.dart';
+
 import '../clients.dart';
-import '../config/models.dart';
-import '../config/script/action/collect_artifact/collect_artifacts_file.dart';
-import '../server.dart';
+import '../logger.dart';
 import 'job_runner_arguments.dart';
-import '../tools/list_of_strings_to_map.dart';
 
 
 final Map<String, List<Isolate>> jobsQueue = {};
-
 
 String subStituteEnvironmentVariables(Map<String, String> env, String string) =>
   string.replaceAllMapped(RegExp('%([A-Za-z0-9_-]+)%'),
     (match) => env[match.group(1)] ?? '%${match.group(1)}%',
   );
 
-// TODO: convert to modern coding standarts with singleton class JobRunner.
+// TODO: convert to modern coding standards with singleton class JobRunner.
 Future<void> runJob({
   required String name,
   required Job job,
@@ -40,10 +39,8 @@ Future<void> runJob({
   final artifacts = <ActionCollectArtifactsFile>[];
 
   for (final task in job.tasks) {
-    var scriptN = 0;
     if ((error != 0) == task.onError) {
       for (final script in task.script) {
-        scriptN++;
         final environment = {
           ...job.environmentVariables,
           ...task.env.splitToMap('='), // TODO: there might be an error

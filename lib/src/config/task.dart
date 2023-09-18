@@ -1,6 +1,5 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-import '../tools/split_string_once.dart';
 import 'script/script.dart';
 
 part 'task.mapper.dart';

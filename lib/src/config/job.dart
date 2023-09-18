@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
-import '../job_runner/events/github_event_handler.dart';
-import '../tools/split_string_once.dart';
+import '../../tools/split_string_once.dart';
 import 'env_mode.dart';
 import 'event/event.dart';
 import 'on_queue.dart';
@@ -23,7 +22,7 @@ class Job with JobMappable {
     this.env = const [],
     this.envMode = EnvMode.inherit,
     this.onQueue = OnQueue.restart,
-  }) : eventHandler = GitHubEventHandler(events);
+  });
 
   final List<Event> events;
   final List<Task> tasks;
@@ -32,8 +31,6 @@ class Job with JobMappable {
   final String artifactsDirectory;
   final List<String> env;
   final EnvMode envMode;
-
-  final GitHubEventHandler eventHandler;
 
   Map<String, String> get environmentVariables => {
     for (final pair in env)
