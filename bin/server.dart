@@ -26,7 +26,7 @@ Future<Response> _updateConfig(Request req) async {
   try {
     microCI.updateConfig(await configWatcher.getConfig());
   } catch (e, stackTrace) {
-    MicroCI.logger.severe('_updateConfig error', e, stackTrace);
+    MicroCI.logger.severe('Error while updating config', e, stackTrace);
     return Response(500);
   }
 
@@ -45,14 +45,14 @@ Future<Response> _eventHandler(Request request) async {
     return Response(400);
 
   microCI.handleEvent(eventName, request)
-    .listen((context) => MicroCI.logger.fine('Job completed:\n$context'),
+    .listen((context) => MicroCI.logger.fine('Job results:\n$context'),
       // ignore: avoid_types_on_closure_parameters
       onError: (Object error, StackTrace stackTrace) {
         switch (error) {
           case InfoException():
             MicroCI.logger.info(error.message, error.original);
           default:
-            MicroCI.logger.severe('handleEvent', error, stackTrace);
+            MicroCI.logger.severe('Error while handling event', error, stackTrace);
         }
       },
     );
