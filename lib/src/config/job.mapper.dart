@@ -49,6 +49,11 @@ class JobMapper extends ClassMapperBase<Job> {
   static const Field<Job, QueueMode> _f$queueMode = Field(
       'queueMode', _$queueMode,
       key: 'queue_mode', opt: true, def: QueueMode.restart);
+  static Map<String, String> _$environmentVariables(Job v) =>
+      v.environmentVariables;
+  static const Field<Job, Map<String, String>> _f$environmentVariables = Field(
+      'environmentVariables', _$environmentVariables,
+      mode: FieldMode.member);
 
   @override
   final Map<Symbol, Field<Job, dynamic>> fields = const {
@@ -59,6 +64,7 @@ class JobMapper extends ClassMapperBase<Job> {
     #env: _f$env,
     #envMode: _f$envMode,
     #queueMode: _f$queueMode,
+    #environmentVariables: _f$environmentVariables,
   };
 
   static Job _instantiate(DecodingData data) {

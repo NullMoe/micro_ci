@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
-import '../../tools/split_string_once.dart';
+import '../../tools/list_of_strings_to_map.dart';
 import 'env_mode.dart';
 import 'event/event.dart';
 import 'queue_mode.dart';
@@ -22,7 +22,7 @@ class Job with JobMappable {
     this.env = const [],
     this.envMode = EnvMode.inherit,
     this.queueMode = QueueMode.restart,
-  });
+  }) : environmentVariables = env.splitToMap('=');
 
   final List<Event> events;
   final List<Task> tasks;
@@ -32,11 +32,7 @@ class Job with JobMappable {
   final List<String> env;
   final EnvMode envMode;
 
-  Map<String, String> get environmentVariables => {
-    for (final pair in env)
-      if (pair.splitOnce('=') case [ final key, final value, ])
-        key: value,
-  };
+  Map<String, String> environmentVariables;
 
   Directory get directory {
     if (isAbsolute(workingDirectory))

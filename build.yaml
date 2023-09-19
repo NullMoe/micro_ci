@@ -1,5 +1,6 @@
-global_options:
-  dart_mappable_builder:
-    options:
-      caseStyle: snakeCase
-
+targets:
+  $default:
+    builders:
+      dart_mappable_builder:
+        options:
+          caseStyle: snakeCase

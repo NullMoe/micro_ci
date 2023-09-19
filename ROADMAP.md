@@ -1,7 +1,6 @@
 # Roadmap
 
 - Add example.config.yaml with structured documentation.
-- Return build statistics instead of void.
 - Check reviewer origin. (Or reviewers whitelist)
 - Add Dockerfile. (No progress)
 - Artifact rotation. (No progress)

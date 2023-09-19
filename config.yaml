@@ -18,6 +18,7 @@ templates:
       # restart - stop task and mark it failed
       # queue (default) - add to queue
 
+
     tasks:
       # if task errors execution skips until on_error encountered
       # then execution state is reset

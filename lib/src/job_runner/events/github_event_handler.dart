@@ -1,6 +1,7 @@
 import 'package:glob/glob.dart';
 
 import '../../../micro_ci.dart';
+import '../../info_exception.dart';
 import '../job_runner_arguments.dart';
 
 
@@ -27,47 +28,48 @@ class GitHubEventHandler {
 
   JobRunnerArguments _handleReviewEvent(List<LocalReviewEvent> filters, String payload) {
     if (filters.isEmpty)
-      throw ArgumentError.value(filters, 'filters', 'empty');
+      throw InfoException('Filters are empty.');
 
     final review = WebHookPullRequestReview.parse(payload);
 
-    if (review is WebHookPullRequestReviewSubmitted) {
-      if (review.pullRequest.base.repo.fullName != review.pullRequest.head.repo.fullName)
-        throw UnimplementedError('Review(${review.pullRequest.id}): building non-local review is not yet possible.');
+    switch (review) {
+      case WebHookPullRequestReviewSubmitted():
+        if (review.pullRequest.base.repo.fullName != review.pullRequest.head.repo.fullName)
+          throw UnimplementedError('Review(${review.pullRequest.id}): building non-local review is not yet possible.');
 
-      if (review.review.state != 'approved')
-        throw Exception('Review(${review.pullRequest.id}): is not approved.');
+        if (review.review.state != 'approved')
+          throw InfoException('Review(${review.pullRequest.id}): is not approved.');
 
-      if (!filters.any((filter) =>
-        filter.head.any((branchName) =>
-          Glob(branchName).matches(review.pullRequest.head.ref),
-        ) && (
-          filter.base.isEmpty ||
-          filter.base.any((branchName) =>
-            Glob(branchName).matches(review.pullRequest.base.ref),
-          )
-        ),
-      ))
-        throw Exception('Review(${review.pullRequest.id}): does not match any event filter.');
+        if (!filters.any((filter) =>
+          filter.head.any((branchName) =>
+            Glob(branchName).matches(review.pullRequest.head.ref),
+          ) && (
+            filter.base.isEmpty ||
+            filter.base.any((branchName) =>
+              Glob(branchName).matches(review.pullRequest.base.ref),
+            )
+          ),
+        ))
+          throw InfoException('Review(${review.pullRequest.id}): does not match any event filter.');
 
-      // _log(stdout, review, 'Checks passed. Running.');
+        // _log(stdout, review, 'Checks passed. Running.');
 
-      return JobRunnerArguments(
-        headSha: review.pullRequest.head.sha,
-        headBranch: review.pullRequest.head.ref,
-        headRepoFullName: review.pullRequest.head.repo.fullName,
-        baseBranch: review.pullRequest.base.sha,
-        baseRepoFullName: review.pullRequest.base.ref,
-        baseSha: review.pullRequest.base.repo.fullName,
-      );
+        return JobRunnerArguments(
+          headSha: review.pullRequest.head.sha,
+          headBranch: review.pullRequest.head.ref,
+          headRepoFullName: review.pullRequest.head.repo.fullName,
+          baseBranch: review.pullRequest.base.sha,
+          baseRepoFullName: review.pullRequest.base.ref,
+          baseSha: review.pullRequest.base.repo.fullName,
+        );
+      case _:
+        throw UnimplementedError('${review.runtimeType} handling is not implemented.');
     }
-
-    throw UnimplementedError('${review.runtimeType} handling is not implemented.');
   }
 
   JobRunnerArguments _handlePushEvent(List<PushEvent> filters, String payload) {
     if (filters.isEmpty)
-      throw ArgumentError.value(filters, 'filters', 'empty');
+      throw InfoException('Filters are empty.');
 
     final push = WebHookPush.parse(payload);
 
@@ -76,7 +78,7 @@ class GitHubEventHandler {
         Glob(name).matches(push.branchName),
       ),
     ))
-      throw Exception('Push(${push.after.substring(0, 7)}): does not match any event filter.');
+      throw InfoException('Push(${push.shortHash}): does not match any event filter.');
 
     return JobRunnerArguments(
       headSha: push.after,

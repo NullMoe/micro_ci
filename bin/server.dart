@@ -1,17 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:logging/logging.dart';
 import 'package:micro_ci/micro_ci.dart';
-import 'package:micro_ci/src/micro_ci.dart';
+import 'package:micro_ci/src/info_exception.dart';
+import 'package:micro_ci/src/telegram/models.init.dart' as telegramInit;
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 
-final microCI = MicroCI(
-  configFile: File(join(Directory.current.path, 'config.yaml')),
+final configWatcher = ConfigWatcher(
+  File(join(Directory.current.path, 'config.yaml')),
 );
+
+final microCI = MicroCI();
 
 // Configure routes.
 final _router = Router()
@@ -20,51 +24,69 @@ final _router = Router()
   ..post('/events', _eventHandler);
 
 Future<Response> _updateConfig(Request req) async {
-  if (req.url.queryParameters['token'] != microCI.ciToken)
-    return Response(403);
-
-  await microCI.updateConfig();
+  microCI.updateConfig(await configWatcher.getConfig());
 
   return Response(200);
 }
 
 Future<Response> _restartWatcher(Request req) async {
-  if (req.url.queryParameters['token'] != microCI.ciToken)
-    return Response(403);
-
-  await microCI.updateWatcher();
+  await configWatcher.restartWatcher();
 
   return Response(200);
 }
 
-Future<Response> _eventHandler(Request req) async {
-  if (req.url.queryParameters['token'] != microCI.ciToken)
-    return Response(403);
-
-  final eventName = req.headers['x-github-event'];
+Future<Response> _eventHandler(Request request) async {
+  final eventName = request.headers['x-github-event'];
   if (eventName == null)
     return Response(400);
 
-  microCI.handleEvent(eventName, await req.readAsString());
+  microCI.handleEvent(eventName, request)
+    .listen((context) => Logger.root.info('Done:\n$context'),
+      // ignore: avoid_types_on_closure_parameters
+      onError: (Object error, StackTrace stackTrace) {
+        switch (error) {
+          case InfoException():
+            Logger.root.info(error.message, error.original);
+          default:
+            Logger.root.severe('handleEvent $error $stackTrace');
+        }
+      },
+    );
 
   return Response(200);
 }
 
-void ensureGenericMappersInitialized() {
-  TelegramMessageMapper.ensureInitialized();
-  TelegramResponseMapper.ensureInitialized();
-}
-
 void main(List<String> args) async {
-  ensureGenericMappersInitialized();
+  telegramInit.initializeMappers();
+
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: [${record.loggerName.isEmpty ? 'Global' : record.loggerName}]: ${record.message}');
+  });
+
+  microCI.updateConfig(await configWatcher.getConfig());
+  configWatcher.config.listen(microCI.updateConfig,
+    // ignore: avoid_types_on_closure_parameters
+    onError: (Object error, StackTrace stackTrace) =>
+      Logger.root.severe('configWatcher error', error, stackTrace),
+  );
+
+  await configWatcher.restartWatcher();
 
   final handler = const Pipeline()
-    .addMiddleware(
+    .addMiddleware((innerHandler) =>
+      (req) async {
+        if (req.url.queryParameters['token'] != microCI.ciToken)
+          return Response(403);
+
+        return innerHandler(req);
+      },
+    ).addMiddleware(
       logRequests(
         logger: (message, isError) {
           if (isError)
-            microCI.logger.e(message);
-          microCI.logger.i(message);
+            Logger.root.severe(message);
+          Logger.root.info(message);
         },
       ),
     ).addHandler(_router);
@@ -75,5 +97,5 @@ void main(List<String> args) async {
     microCI.ciPort,
   );
 
-  microCI.logger.i('Server listening on port ${server.port}.');
+  Logger.root.info('Server listening on port ${server.port}.');
 }

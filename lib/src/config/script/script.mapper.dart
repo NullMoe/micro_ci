@@ -30,10 +30,9 @@ class ScriptMapper extends ClassMapperBase<Script> {
   final Map<Symbol, Field<Script, dynamic>> fields = const {};
 
   @override
-  final MappingHook hook = const CommandHook();
+  final MappingHook hook = const ScriptHook();
   static Script _instantiate(DecodingData data) {
-    throw MapperException.missingSubclass(
-        'Script', 'builtin_action', '${data.value['builtin_action']}');
+    throw MapperException.missingConstructor('Script');
   }
 
   @override
@@ -58,6 +57,192 @@ abstract class ScriptCopyWith<$R, $In extends Script, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   $R call();
   ScriptCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class ActionBuiltinScriptMapper
+    extends SubClassMapperBase<ActionBuiltinScript> {
+  ActionBuiltinScriptMapper._();
+
+  static ActionBuiltinScriptMapper? _instance;
+  static ActionBuiltinScriptMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = ActionBuiltinScriptMapper._());
+      ScriptMapper.ensureInitialized().addSubMapper(_instance!);
+      ActionApplyCheckStatusMapper.ensureInitialized();
+      ActionCollectArtifactsMapper.ensureInitialized();
+      ActionTelegramMessageMapper.ensureInitialized();
+    }
+    return _instance!;
+  }
+
+  static T _guard<T>(T Function(MapperContainer) fn) {
+    ensureInitialized();
+    return fn(MapperContainer.globals);
+  }
+
+  @override
+  final String id = 'ActionBuiltinScript';
+
+  @override
+  final Map<Symbol, Field<ActionBuiltinScript, dynamic>> fields = const {};
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = ActionBuiltinScript._discriminator;
+  @override
+  late final ClassMapperBase superMapper = ScriptMapper.ensureInitialized();
+
+  @override
+  final MappingHook hook = const FieldUnwrappingHook('builtin_action');
+  @override
+  final MappingHook superHook = const ScriptHook();
+
+  static ActionBuiltinScript _instantiate(DecodingData data) {
+    throw MapperException.missingSubclass(
+        'ActionBuiltinScript', 'name', '${data.value['name']}');
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static ActionBuiltinScript fromMap(Map<String, dynamic> map) {
+    return _guard((c) => c.fromMap<ActionBuiltinScript>(map));
+  }
+
+  static ActionBuiltinScript fromJson(String json) {
+    return _guard((c) => c.fromJson<ActionBuiltinScript>(json));
+  }
+}
+
+mixin ActionBuiltinScriptMappable {
+  String toJson();
+  Map<String, dynamic> toMap();
+  ActionBuiltinScriptCopyWith<ActionBuiltinScript, ActionBuiltinScript,
+      ActionBuiltinScript> get copyWith;
+}
+
+abstract class ActionBuiltinScriptCopyWith<$R, $In extends ActionBuiltinScript,
+    $Out> implements ScriptCopyWith<$R, $In, $Out> {
+  @override
+  $R call();
+  ActionBuiltinScriptCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
+}
+
+class CommandMapper extends SubClassMapperBase<Command> {
+  CommandMapper._();
+
+  static CommandMapper? _instance;
+  static CommandMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = CommandMapper._());
+      ScriptMapper.ensureInitialized().addSubMapper(_instance!);
+    }
+    return _instance!;
+  }
+
+  static T _guard<T>(T Function(MapperContainer) fn) {
+    ensureInitialized();
+    return fn(MapperContainer.globals);
+  }
+
+  @override
+  final String id = 'Command';
+
+  static String _$command(Command v) => v.command;
+  static const Field<Command, String> _f$command = Field('command', _$command);
+
+  @override
+  final Map<Symbol, Field<Command, dynamic>> fields = const {
+    #command: _f$command,
+  };
+
+  @override
+  final String discriminatorKey = 'type';
+  @override
+  final dynamic discriminatorValue = MappableClass.useAsDefault;
+  @override
+  late final ClassMapperBase superMapper = ScriptMapper.ensureInitialized();
+
+  @override
+  final MappingHook superHook = const ScriptHook();
+
+  static Command _instantiate(DecodingData data) {
+    return Command(command: data.dec(_f$command));
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static Command fromMap(Map<String, dynamic> map) {
+    return _guard((c) => c.fromMap<Command>(map));
+  }
+
+  static Command fromJson(String json) {
+    return _guard((c) => c.fromJson<Command>(json));
+  }
+}
+
+mixin CommandMappable {
+  String toJson() {
+    return CommandMapper._guard((c) => c.toJson(this as Command));
+  }
+
+  Map<String, dynamic> toMap() {
+    return CommandMapper._guard((c) => c.toMap(this as Command));
+  }
+
+  CommandCopyWith<Command, Command, Command> get copyWith =>
+      _CommandCopyWithImpl(this as Command, $identity, $identity);
+  @override
+  String toString() {
+    return CommandMapper._guard((c) => c.asString(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (runtimeType == other.runtimeType &&
+            CommandMapper._guard((c) => c.isEqual(this, other)));
+  }
+
+  @override
+  int get hashCode {
+    return CommandMapper._guard((c) => c.hash(this));
+  }
+}
+
+extension CommandValueCopy<$R, $Out> on ObjectCopyWith<$R, Command, $Out> {
+  CommandCopyWith<$R, Command, $Out> get $asCommand =>
+      $base.as((v, t, t2) => _CommandCopyWithImpl(v, t, t2));
+}
+
+abstract class CommandCopyWith<$R, $In extends Command, $Out>
+    implements ScriptCopyWith<$R, $In, $Out> {
+  @override
+  $R call({String? command});
+  CommandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
+}
+
+class _CommandCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, Command, $Out>
+    implements CommandCopyWith<$R, Command, $Out> {
+  _CommandCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<Command> $mapper =
+      CommandMapper.ensureInitialized();
+  @override
+  $R call({String? command}) =>
+      $apply(FieldCopyWithData({if (command != null) #command: command}));
+  @override
+  Command $make(CopyWithData data) =>
+      Command(command: data.get(#command, or: $value.command));
+
+  @override
+  CommandCopyWith<$R2, Command, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+      _CommandCopyWithImpl($value, $cast, t);
 }
 
 class ActionApplyCheckStatusMapper
@@ -103,7 +288,7 @@ class ActionApplyCheckStatusMapper
   final MappingHook hook = const FieldUnwrappingHook('options');
   @override
   final MappingHook superHook =
-      const ChainedHook([FieldUnwrappingHook('builtin_action'), CommandHook()]);
+      const ChainedHook([FieldUnwrappingHook('builtin_action'), ScriptHook()]);
 
   static ActionApplyCheckStatus _instantiate(DecodingData data) {
     return ActionApplyCheckStatus(checkStatus: data.dec(_f$checkStatus));
@@ -197,78 +382,6 @@ class _ActionApplyCheckStatusCopyWithImpl<$R, $Out>
           _ActionApplyCheckStatusCopyWithImpl($value, $cast, t);
 }
 
-class ActionBuiltinScriptMapper
-    extends SubClassMapperBase<ActionBuiltinScript> {
-  ActionBuiltinScriptMapper._();
-
-  static ActionBuiltinScriptMapper? _instance;
-  static ActionBuiltinScriptMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = ActionBuiltinScriptMapper._());
-      ScriptMapper.ensureInitialized().addSubMapper(_instance!);
-      ActionApplyCheckStatusMapper.ensureInitialized();
-      ActionCollectArtifactsMapper.ensureInitialized();
-      ActionTelegramMessageMapper.ensureInitialized();
-      ActionUnknownBuiltinScriptMapper.ensureInitialized();
-    }
-    return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
-  @override
-  final String id = 'ActionBuiltinScript';
-
-  @override
-  final Map<Symbol, Field<ActionBuiltinScript, dynamic>> fields = const {};
-
-  @override
-  final String discriminatorKey = 'builtin_action';
-  @override
-  final dynamic discriminatorValue = MappableClass.useAsDefault;
-  @override
-  late final ClassMapperBase superMapper = ScriptMapper.ensureInitialized();
-
-  @override
-  final MappingHook hook = const FieldUnwrappingHook('builtin_action');
-  @override
-  final MappingHook superHook = const CommandHook();
-
-  static ActionBuiltinScript _instantiate(DecodingData data) {
-    throw MapperException.missingSubclass(
-        'ActionBuiltinScript', 'name', '${data.value['name']}');
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static ActionBuiltinScript fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<ActionBuiltinScript>(map));
-  }
-
-  static ActionBuiltinScript fromJson(String json) {
-    return _guard((c) => c.fromJson<ActionBuiltinScript>(json));
-  }
-}
-
-mixin ActionBuiltinScriptMappable {
-  String toJson();
-  Map<String, dynamic> toMap();
-  ActionBuiltinScriptCopyWith<ActionBuiltinScript, ActionBuiltinScript,
-      ActionBuiltinScript> get copyWith;
-}
-
-abstract class ActionBuiltinScriptCopyWith<$R, $In extends ActionBuiltinScript,
-    $Out> implements ScriptCopyWith<$R, $In, $Out> {
-  @override
-  $R call();
-  ActionBuiltinScriptCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-      Then<$Out2, $R2> t);
-}
-
 class ActionCollectArtifactsMapper
     extends SubClassMapperBase<ActionCollectArtifacts> {
   ActionCollectArtifactsMapper._();
@@ -313,7 +426,7 @@ class ActionCollectArtifactsMapper
   final MappingHook hook = const FieldUnwrappingHook('options');
   @override
   final MappingHook superHook =
-      const ChainedHook([FieldUnwrappingHook('builtin_action'), CommandHook()]);
+      const ChainedHook([FieldUnwrappingHook('builtin_action'), ScriptHook()]);
 
   static ActionCollectArtifacts _instantiate(DecodingData data) {
     return ActionCollectArtifacts(files: data.dec(_f$files));
@@ -469,7 +582,7 @@ class ActionTelegramMessageMapper
   final MappingHook hook = const FieldUnwrappingHook('options');
   @override
   final MappingHook superHook =
-      const ChainedHook([FieldUnwrappingHook('builtin_action'), CommandHook()]);
+      const ChainedHook([FieldUnwrappingHook('builtin_action'), ScriptHook()]);
 
   static ActionTelegramMessage _instantiate(DecodingData data) {
     return ActionTelegramMessage(
@@ -572,246 +685,4 @@ class _ActionTelegramMessageCopyWithImpl<$R, $Out>
   ActionTelegramMessageCopyWith<$R2, ActionTelegramMessage, $Out2>
       $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
           _ActionTelegramMessageCopyWithImpl($value, $cast, t);
-}
-
-class ActionUnknownBuiltinScriptMapper
-    extends SubClassMapperBase<ActionUnknownBuiltinScript> {
-  ActionUnknownBuiltinScriptMapper._();
-
-  static ActionUnknownBuiltinScriptMapper? _instance;
-  static ActionUnknownBuiltinScriptMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals
-          .use(_instance = ActionUnknownBuiltinScriptMapper._());
-      ActionBuiltinScriptMapper.ensureInitialized().addSubMapper(_instance!);
-    }
-    return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
-  @override
-  final String id = 'ActionUnknownBuiltinScript';
-
-  @override
-  final Map<Symbol, Field<ActionUnknownBuiltinScript, dynamic>> fields =
-      const {};
-
-  @override
-  final String discriminatorKey = 'name';
-  @override
-  final dynamic discriminatorValue = MappableClass.useAsDefault;
-  @override
-  late final ClassMapperBase superMapper =
-      ActionBuiltinScriptMapper.ensureInitialized();
-
-  @override
-  final MappingHook superHook =
-      const ChainedHook([FieldUnwrappingHook('builtin_action'), CommandHook()]);
-
-  static ActionUnknownBuiltinScript _instantiate(DecodingData data) {
-    return ActionUnknownBuiltinScript();
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static ActionUnknownBuiltinScript fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<ActionUnknownBuiltinScript>(map));
-  }
-
-  static ActionUnknownBuiltinScript fromJson(String json) {
-    return _guard((c) => c.fromJson<ActionUnknownBuiltinScript>(json));
-  }
-}
-
-mixin ActionUnknownBuiltinScriptMappable {
-  String toJson() {
-    return ActionUnknownBuiltinScriptMapper._guard(
-        (c) => c.toJson(this as ActionUnknownBuiltinScript));
-  }
-
-  Map<String, dynamic> toMap() {
-    return ActionUnknownBuiltinScriptMapper._guard(
-        (c) => c.toMap(this as ActionUnknownBuiltinScript));
-  }
-
-  ActionUnknownBuiltinScriptCopyWith<ActionUnknownBuiltinScript,
-          ActionUnknownBuiltinScript, ActionUnknownBuiltinScript>
-      get copyWith => _ActionUnknownBuiltinScriptCopyWithImpl(
-          this as ActionUnknownBuiltinScript, $identity, $identity);
-  @override
-  String toString() {
-    return ActionUnknownBuiltinScriptMapper._guard((c) => c.asString(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ActionUnknownBuiltinScriptMapper._guard(
-                (c) => c.isEqual(this, other)));
-  }
-
-  @override
-  int get hashCode {
-    return ActionUnknownBuiltinScriptMapper._guard((c) => c.hash(this));
-  }
-}
-
-extension ActionUnknownBuiltinScriptValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, ActionUnknownBuiltinScript, $Out> {
-  ActionUnknownBuiltinScriptCopyWith<$R, ActionUnknownBuiltinScript, $Out>
-      get $asActionUnknownBuiltinScript => $base
-          .as((v, t, t2) => _ActionUnknownBuiltinScriptCopyWithImpl(v, t, t2));
-}
-
-abstract class ActionUnknownBuiltinScriptCopyWith<
-    $R,
-    $In extends ActionUnknownBuiltinScript,
-    $Out> implements ActionBuiltinScriptCopyWith<$R, $In, $Out> {
-  @override
-  $R call();
-  ActionUnknownBuiltinScriptCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
-      Then<$Out2, $R2> t);
-}
-
-class _ActionUnknownBuiltinScriptCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, ActionUnknownBuiltinScript, $Out>
-    implements
-        ActionUnknownBuiltinScriptCopyWith<$R, ActionUnknownBuiltinScript,
-            $Out> {
-  _ActionUnknownBuiltinScriptCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<ActionUnknownBuiltinScript> $mapper =
-      ActionUnknownBuiltinScriptMapper.ensureInitialized();
-  @override
-  $R call() => $apply(FieldCopyWithData({}));
-  @override
-  ActionUnknownBuiltinScript $make(CopyWithData data) =>
-      ActionUnknownBuiltinScript();
-
-  @override
-  ActionUnknownBuiltinScriptCopyWith<$R2, ActionUnknownBuiltinScript, $Out2>
-      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-          _ActionUnknownBuiltinScriptCopyWithImpl($value, $cast, t);
-}
-
-class CommandMapper extends SubClassMapperBase<Command> {
-  CommandMapper._();
-
-  static CommandMapper? _instance;
-  static CommandMapper ensureInitialized() {
-    if (_instance == null) {
-      MapperContainer.globals.use(_instance = CommandMapper._());
-      ScriptMapper.ensureInitialized().addSubMapper(_instance!);
-    }
-    return _instance!;
-  }
-
-  static T _guard<T>(T Function(MapperContainer) fn) {
-    ensureInitialized();
-    return fn(MapperContainer.globals);
-  }
-
-  @override
-  final String id = 'Command';
-
-  static String _$command(Command v) => v.command;
-  static const Field<Command, String> _f$command = Field('command', _$command);
-
-  @override
-  final Map<Symbol, Field<Command, dynamic>> fields = const {
-    #command: _f$command,
-  };
-
-  @override
-  final String discriminatorKey = 'builtin_action';
-  @override
-  final dynamic discriminatorValue = null;
-  @override
-  late final ClassMapperBase superMapper = ScriptMapper.ensureInitialized();
-
-  @override
-  final MappingHook superHook = const CommandHook();
-
-  static Command _instantiate(DecodingData data) {
-    return Command(command: data.dec(_f$command));
-  }
-
-  @override
-  final Function instantiate = _instantiate;
-
-  static Command fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<Command>(map));
-  }
-
-  static Command fromJson(String json) {
-    return _guard((c) => c.fromJson<Command>(json));
-  }
-}
-
-mixin CommandMappable {
-  String toJson() {
-    return CommandMapper._guard((c) => c.toJson(this as Command));
-  }
-
-  Map<String, dynamic> toMap() {
-    return CommandMapper._guard((c) => c.toMap(this as Command));
-  }
-
-  CommandCopyWith<Command, Command, Command> get copyWith =>
-      _CommandCopyWithImpl(this as Command, $identity, $identity);
-  @override
-  String toString() {
-    return CommandMapper._guard((c) => c.asString(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            CommandMapper._guard((c) => c.isEqual(this, other)));
-  }
-
-  @override
-  int get hashCode {
-    return CommandMapper._guard((c) => c.hash(this));
-  }
-}
-
-extension CommandValueCopy<$R, $Out> on ObjectCopyWith<$R, Command, $Out> {
-  CommandCopyWith<$R, Command, $Out> get $asCommand =>
-      $base.as((v, t, t2) => _CommandCopyWithImpl(v, t, t2));
-}
-
-abstract class CommandCopyWith<$R, $In extends Command, $Out>
-    implements ScriptCopyWith<$R, $In, $Out> {
-  @override
-  $R call({String? command});
-  CommandCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
-}
-
-class _CommandCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, Command, $Out>
-    implements CommandCopyWith<$R, Command, $Out> {
-  _CommandCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<Command> $mapper =
-      CommandMapper.ensureInitialized();
-  @override
-  $R call({String? command}) =>
-      $apply(FieldCopyWithData({if (command != null) #command: command}));
-  @override
-  Command $make(CopyWithData data) =>
-      Command(command: data.get(#command, or: $value.command));
-
-  @override
-  CommandCopyWith<$R2, Command, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-      _CommandCopyWithImpl($value, $cast, t);
 }

@@ -2,7 +2,7 @@ part of '../event.dart';
 
 
 @MappableClass(
-  discriminatorValue: LocalReviewEvent.isLocalReview,
+  discriminatorValue: LocalReviewEvent._isLocalReview,
   hook: FieldUnwrappingHook('local_review'),
 )
 class LocalReviewEvent extends Event with LocalReviewEventMappable {
@@ -15,5 +15,5 @@ class LocalReviewEvent extends Event with LocalReviewEventMappable {
   final List<String> head;
   final List<String> base;
 
-  static bool isLocalReview(Object? value) => value is Map && value.containsKey('local_review');
+  static bool _isLocalReview(Object? value) => value is Map && value.containsKey('local_review');
 }

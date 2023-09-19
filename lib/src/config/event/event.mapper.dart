@@ -93,7 +93,7 @@ class LocalReviewEventMapper extends SubClassMapperBase<LocalReviewEvent> {
   @override
   final String discriminatorKey = 'type';
   @override
-  final dynamic discriminatorValue = LocalReviewEvent.isLocalReview;
+  final dynamic discriminatorValue = LocalReviewEvent._isLocalReview;
   @override
   late final ClassMapperBase superMapper = EventMapper.ensureInitialized();
 
@@ -225,7 +225,7 @@ class PushEventMapper extends SubClassMapperBase<PushEvent> {
   @override
   final String discriminatorKey = 'type';
   @override
-  final dynamic discriminatorValue = PushEvent.isPushEvent;
+  final dynamic discriminatorValue = PushEvent._isPushEvent;
   @override
   late final ClassMapperBase superMapper = EventMapper.ensureInitialized();
 

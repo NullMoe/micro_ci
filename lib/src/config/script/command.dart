@@ -2,7 +2,7 @@ part of 'script.dart';
 
 
 @MappableClass(
-  discriminatorValue: null,
+  discriminatorValue: MappableClass.useAsDefault,
 )
 class Command extends Script with CommandMappable {
   const Command({
@@ -10,21 +10,4 @@ class Command extends Script with CommandMappable {
   });
 
   final String command;
-}
-
-// Hooks
-
-class CommandHook extends MappingHook {
-  const CommandHook();
-
-  @override
-  Object? beforeDecode(Object? value) {
-    if (value is String)
-      return {
-        'builtin_action': null,
-        'command': value,
-      };
-
-    return value;
-  }
 }

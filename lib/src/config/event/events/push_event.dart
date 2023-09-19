@@ -2,7 +2,7 @@ part of '../event.dart';
 
 
 @MappableClass(
-  discriminatorValue: PushEvent.isPushEvent,
+  discriminatorValue: PushEvent._isPushEvent,
   hook: FieldUnwrappingHook('push_commit'),
 )
 class PushEvent extends Event with PushEventMappable {
@@ -11,5 +11,5 @@ class PushEvent extends Event with PushEventMappable {
   @override
   final List<String> head;
 
-  static bool isPushEvent(Object? value) => value is Map && value.containsKey('push_commit');
+  static bool _isPushEvent(Object? value) => value is Map && value.containsKey('push_commit');
 }

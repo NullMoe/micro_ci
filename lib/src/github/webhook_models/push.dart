@@ -42,4 +42,5 @@ class WebHookPush with WebHookPushMappable {
   final WebHookUser? sender;
 
   String get branchName => ref.split('/').sublist(2).join('/');
+  String get shortHash => after.substring(0, 7);
 }
