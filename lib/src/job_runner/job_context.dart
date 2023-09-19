@@ -1,18 +1,26 @@
 import 'dart:io';
 
+import 'package:dart_mappable/dart_mappable.dart';
+
 import '../../micro_ci.dart';
 
-class JobContext {
+part 'job_context.mapper.dart';
+
+
+@MappableClass(
+  generateMethods: GenerateMethods.stringify,
+)
+class JobContext with JobContextMappable {
   JobContext(this.name);
 
   final String name;
 
   /// Combined output of all processes run in job.
-  String stdout = '';
+  StringBuffer stdout = StringBuffer();
   /// Combined error output of all processes run in job.
-  String stderr = '';
+  StringBuffer stderr = StringBuffer();
   /// Combined output and error output of all processes run in job.
-  String combined = '';
+  StringBuffer combined = StringBuffer();
   /// Name of last executed task in job.
   String? lastTaskName;
   /// Exit code of last script command.
@@ -26,22 +34,15 @@ class JobContext {
   List<ActionCollectArtifactsFile> artifacts = [];
 
   void logProcessResult(ProcessResult result) {
-    stdout += '${result.stdout}';
-    stderr += '${result.stderr}';
-    combined += '${result.stdout}\n${result.stderr}';
+    stdout.write(result.stdout);
+    stderr.write(result.stderr);
+    combined
+      ..write(result.stdout)
+      ..write(result.stderr);
   }
 
   void logTelegramMessageResponse(TelegramMessage message) {
     rootTelegramMessageId ??= message.id;
     lastTelegramMessageId = message.id;
   }
-
-  @override
-  String toString() => '''
-\t$name:
-\t\tlastTaskName: $lastTaskName
-\t\tlastExitCode: $lastExitCode
-\t\tlastScriptNo: $lastScriptNo
-\t\trootTelegramMessageId: $rootTelegramMessageId
-\t\tlastTelegramMessageId: $lastTelegramMessageId''';
 }

@@ -1,7 +1,8 @@
 import 'package:glob/glob.dart';
 
 import '../../../micro_ci.dart';
-import '../../info_exception.dart';
+import '../../exception/filter_exception.dart';
+import '../../exception/info_exception.dart';
 import '../job_runner_arguments.dart';
 
 
@@ -27,9 +28,6 @@ class GitHubEventHandler {
     (filters, payload) => handler(filters as List<T>, payload);
 
   JobRunnerArguments _handleReviewEvent(List<LocalReviewEvent> filters, String payload) {
-    if (filters.isEmpty)
-      throw InfoException('Filters are empty.');
-
     final review = WebHookPullRequestReview.parse(payload);
 
     switch (review) {
@@ -50,9 +48,7 @@ class GitHubEventHandler {
             )
           ),
         ))
-          throw InfoException('Review(${review.pullRequest.id}): does not match any event filter.');
-
-        // _log(stdout, review, 'Checks passed. Running.');
+          throw FilterException('Review(${review.pullRequest.id}): does not match any event filter.');
 
         return JobRunnerArguments(
           headSha: review.pullRequest.head.sha,
@@ -68,9 +64,6 @@ class GitHubEventHandler {
   }
 
   JobRunnerArguments _handlePushEvent(List<PushEvent> filters, String payload) {
-    if (filters.isEmpty)
-      throw InfoException('Filters are empty.');
-
     final push = WebHookPush.parse(payload);
 
     if (!filters.any((pushEvent) =>
@@ -78,7 +71,7 @@ class GitHubEventHandler {
         Glob(name).matches(push.branchName),
       ),
     ))
-      throw InfoException('Push(${push.shortHash}): does not match any event filter.');
+      throw FilterException('Push(${push.shortHash}): does not match any event filter.');
 
     return JobRunnerArguments(
       headSha: push.after,
@@ -93,7 +86,9 @@ class GitHubEventHandler {
   JobRunnerArguments handleEvent(String eventName, String payload) =>
     switch (_eventsMap[eventName]) {
       _EventsMapValue($1: final filters, $2: final handler) =>
-        handler(filters, payload),
+        filters.isNotEmpty
+          ? handler(filters, payload)
+          : throw FilterException('Filters are empty.'),
       _ => throw UnimplementedError('$eventName is missing from events map.'),
     };
 }

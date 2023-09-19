@@ -19,10 +19,6 @@ part 'script.mapper.dart';
 
 @MappableClass(
   hook: ScriptHook(),
-  includeSubClasses: [
-    ActionBuiltinScript,
-    Command,
-  ],
 )
 sealed class Script with ScriptMappable {
   const Script();

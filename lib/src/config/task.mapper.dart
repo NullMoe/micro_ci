@@ -29,20 +29,15 @@ class TaskMapper extends ClassMapperBase<Task> {
   static const Field<Task, String> _f$name = Field('name', _$name);
   static List<Script> _$script(Task v) => v.script;
   static const Field<Task, List<Script>> _f$script = Field('script', _$script);
-  static List<String> _$env(Task v) => v.env;
-  static const Field<Task, List<String>> _f$env =
-      Field('env', _$env, opt: true, def: const []);
+  static Map<String, String> _$env(Task v) => v.env;
+  static const Field<Task, Map<String, String>> _f$env = Field('env', _$env,
+      opt: true, def: const {}, hook: ListOfStringsToMapHook());
   static bool _$onError(Task v) => v.onError;
   static const Field<Task, bool> _f$onError =
       Field('onError', _$onError, key: 'on_error', opt: true, def: false);
   static bool _$onAny(Task v) => v.onAny;
   static const Field<Task, bool> _f$onAny =
       Field('onAny', _$onAny, key: 'on_any', opt: true, def: false);
-  static Map<String, String> _$environmentVariables(Task v) =>
-      v.environmentVariables;
-  static const Field<Task, Map<String, String>> _f$environmentVariables = Field(
-      'environmentVariables', _$environmentVariables,
-      mode: FieldMode.member);
 
   @override
   final Map<Symbol, Field<Task, dynamic>> fields = const {
@@ -51,7 +46,6 @@ class TaskMapper extends ClassMapperBase<Task> {
     #env: _f$env,
     #onError: _f$onError,
     #onAny: _f$onAny,
-    #environmentVariables: _f$environmentVariables,
   };
 
   static Task _instantiate(DecodingData data) {
@@ -111,12 +105,12 @@ extension TaskValueCopy<$R, $Out> on ObjectCopyWith<$R, Task, $Out> {
 
 abstract class TaskCopyWith<$R, $In extends Task, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  ListCopyWith<$R, Script, ScriptCopyWith<$R, Script, Script>> get script;
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get env;
+  ListCopyWith<$R, Script, ObjectCopyWith<$R, Script, Script>> get script;
+  MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get env;
   $R call(
       {String? name,
       List<Script>? script,
-      List<String>? env,
+      Map<String, String>? env,
       bool? onError,
       bool? onAny});
   TaskCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -129,18 +123,18 @@ class _TaskCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Task, $Out>
   @override
   late final ClassMapperBase<Task> $mapper = TaskMapper.ensureInitialized();
   @override
-  ListCopyWith<$R, Script, ScriptCopyWith<$R, Script, Script>> get script =>
-      ListCopyWith($value.script, (v, t) => v.copyWith.$chain(t),
+  ListCopyWith<$R, Script, ObjectCopyWith<$R, Script, Script>> get script =>
+      ListCopyWith($value.script, (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(script: v));
   @override
-  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get env =>
-      ListCopyWith($value.env, (v, t) => ObjectCopyWith(v, $identity, t),
+  MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get env =>
+      MapCopyWith($value.env, (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(env: v));
   @override
   $R call(
           {String? name,
           List<Script>? script,
-          List<String>? env,
+          Map<String, String>? env,
           bool? onError,
           bool? onAny}) =>
       $apply(FieldCopyWithData({

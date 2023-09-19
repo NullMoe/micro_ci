@@ -13,7 +13,7 @@ class ConfigWatcher {
   ConfigWatcher(this.configFile) :
     _configController = StreamController<Config>();
 
-  static final Logger _logger = Logger('ConfigWatcher');
+  static final Logger logger = Logger('micro_ci.config_watcher');
 
   final File configFile;
   final StreamController<Config> _configController;
@@ -34,13 +34,13 @@ class ConfigWatcher {
     if (File(event.path).absolute.path == configFile.absolute.path)
       return null;
 
-    _logger.config('config.yaml was updated.');
+    logger.config('${configFile.path} was updated.');
     return getConfig()
       .then(_configController.add, onError: _configController.addError);
   }
 
   Future<void> restartWatcher() async {
-    _logger.config('Updating "${basename(configFile.path)}" file\'s watcher.');
+    logger.config('Updating "${basename(configFile.path)}" file\'s watcher.');
 
     if (_watcher != null)
       await _watcher!.cancel();

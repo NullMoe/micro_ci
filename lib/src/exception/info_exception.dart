@@ -3,4 +3,7 @@ class InfoException implements Exception {
 
   Object? message;
   Exception? original;
+
+  @override
+  String toString() => 'InfoException($message, original: $original)';
 }

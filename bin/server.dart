@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:micro_ci/micro_ci.dart';
-import 'package:micro_ci/src/info_exception.dart';
 import 'package:micro_ci/src/telegram/models.init.dart' as telegramInit;
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
@@ -24,7 +23,12 @@ final _router = Router()
   ..post('/events', _eventHandler);
 
 Future<Response> _updateConfig(Request req) async {
-  microCI.updateConfig(await configWatcher.getConfig());
+  try {
+    microCI.updateConfig(await configWatcher.getConfig());
+  } catch (e, stackTrace) {
+    MicroCI.logger.severe('_updateConfig error', e, stackTrace);
+    return Response(500);
+  }
 
   return Response(200);
 }
@@ -41,14 +45,14 @@ Future<Response> _eventHandler(Request request) async {
     return Response(400);
 
   microCI.handleEvent(eventName, request)
-    .listen((context) => Logger.root.info('Done:\n$context'),
+    .listen((context) => MicroCI.logger.fine('Job completed:\n$context'),
       // ignore: avoid_types_on_closure_parameters
       onError: (Object error, StackTrace stackTrace) {
         switch (error) {
           case InfoException():
-            Logger.root.info(error.message, error.original);
+            MicroCI.logger.info(error.message, error.original);
           default:
-            Logger.root.severe('handleEvent $error $stackTrace');
+            MicroCI.logger.severe('handleEvent', error, stackTrace);
         }
       },
     );
@@ -56,37 +60,44 @@ Future<Response> _eventHandler(Request request) async {
   return Response(200);
 }
 
+Middleware _checkRequestToken = (innerHandler) => (req) async {
+  if (req.url.queryParameters['token'] != microCI.ciToken)
+    return Response(403);
+
+  return innerHandler(req);
+};
+
 void main(List<String> args) async {
   telegramInit.initializeMappers();
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: [${record.loggerName.isEmpty ? 'Global' : record.loggerName}]: ${record.message}');
+    print('${record.level.name}: ${record.time}: [${record.loggerName}]: ${record.message}');
+    if (record.error != null)
+      print(record.error);
+    if (record.stackTrace != null)
+      print(record.stackTrace);
   });
 
   microCI.updateConfig(await configWatcher.getConfig());
   configWatcher.config.listen(microCI.updateConfig,
     // ignore: avoid_types_on_closure_parameters
     onError: (Object error, StackTrace stackTrace) =>
-      Logger.root.severe('configWatcher error', error, stackTrace),
+      ConfigWatcher.logger.severe('', error, stackTrace),
   );
 
   await configWatcher.restartWatcher();
 
-  final handler = const Pipeline()
-    .addMiddleware((innerHandler) =>
-      (req) async {
-        if (req.url.queryParameters['token'] != microCI.ciToken)
-          return Response(403);
+  final serverLogger = Logger('micro_ci.server');
 
-        return innerHandler(req);
-      },
-    ).addMiddleware(
+  final handler = const Pipeline()
+    .addMiddleware(_checkRequestToken)
+    .addMiddleware(
       logRequests(
         logger: (message, isError) {
           if (isError)
-            Logger.root.severe(message);
-          Logger.root.info(message);
+            serverLogger.severe(message);
+          serverLogger.info(message);
         },
       ),
     ).addHandler(_router);
@@ -97,5 +108,5 @@ void main(List<String> args) async {
     microCI.ciPort,
   );
 
-  Logger.root.info('Server listening on port ${server.port}.');
+  serverLogger.info('Server listening on port ${server.port}.');
 }

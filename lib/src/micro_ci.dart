@@ -13,23 +13,25 @@ import 'job_runner/job_runner_arguments.dart';
 
 
 enum _MicroCIConfigState {
-  none,
+  initial,
   ready,
+  error,
 }
 
 class MicroCI {
   MicroCI();
 
-  static final Logger _logger = Logger('ConfigWatcher');
+  static final Logger logger = Logger('micro_ci');
 
-  final _serverConfig = ServerConfig.load('.env');
+  static const _configFileName = '.env';
+  final _serverConfig = ServerConfig.load(_configFileName);
 
   late final GitHubClient gitHubClient =
     GitHubClient(token: _serverConfig.gitHubToken);
   late final TelegramClient telegramClient =
     TelegramClient(token: _serverConfig.telegramToken);
 
-  _MicroCIConfigState _configState = _MicroCIConfigState.none;
+  _MicroCIConfigState _configState = _MicroCIConfigState.initial;
   late Config config;
 
   late Map<String, GitHubEventHandler> _jobHandlers;
@@ -37,12 +39,18 @@ class MicroCI {
   String get ciToken => _serverConfig.ciToken;
   int get ciPort => _serverConfig.ciPort;
 
-  void updateConfig(Config newConfig) {
-    _logger.info('New config supplied.');
+  void updateConfig(Config? newConfig) {
+    if (newConfig == null) {
+      _configState = _MicroCIConfigState.error;
+      _jobHandlers.clear();
+      return;
+    }
+
+    logger.info('New config supplied.');
     config = newConfig;
     _configState = _MicroCIConfigState.ready;
 
-    _logger.info('Updating job handlers.');
+    logger.info('Updating job handlers.');
     _jobHandlers = {
       for (final MapEntry(key: name, value: job) in newConfig.jobs.entries)
         name: GitHubEventHandler(job.events),
@@ -62,6 +70,8 @@ class MicroCI {
           job: job,
           arguments: _jobHandlers[name]!.handleEvent(eventName, payload),
         );
+      } on FilterException catch (e) {
+        logger.fine(e);
       } catch (e, stackTrace) {
         yield* Stream.error(e, stackTrace);
       }
@@ -93,8 +103,8 @@ class MicroCI {
       script: for (final script in task.script) {
         context.lastScriptNo++;
         final environment = {
-          ...job.environmentVariables,
-          ...task.environmentVariables,
+          ...job.env,
+          ...task.env,
           'BUILD_STATUS': '${context.lastExitCode}',
           'BASE_BRANCH': baseBranch ?? '',
           'BASE_SHA': baseSha ?? '',
@@ -142,7 +152,7 @@ class MicroCI {
               case 'post_error_log':
                 final response = await telegramClient.sendMessage(
                   chatId: chatId,
-                  message: (formattedMessage?.padRight(formattedMessage.length + 1, '\n') ?? '') + context.combined,
+                  message: (formattedMessage?.padRight(formattedMessage.length + 1, '\n') ?? '') + context.combined.toString(),
                   replyTo: useReply ? context.rootTelegramMessageId : null,
                 );
                 context.logTelegramMessageResponse(response);
