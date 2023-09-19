@@ -43,6 +43,7 @@ class MicroCI {
     if (newConfig == null) {
       _configState = _MicroCIConfigState.error;
       _jobHandlers.clear();
+      logger.warning('Invalid config supplied.');
       return;
     }
 
