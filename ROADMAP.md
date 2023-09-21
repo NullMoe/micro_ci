@@ -1,5 +1,6 @@
 # Roadmap
 
+- Add cli arguments.
 - Add example.config.yaml with structured documentation.
 - Check reviewer origin. (Or reviewers whitelist)
 - Add Dockerfile. (No progress)
