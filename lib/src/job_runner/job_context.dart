@@ -33,12 +33,14 @@ class JobContext with JobContextMappable {
   int? lastTelegramMessageId;
   List<ActionCollectArtifactsFile> artifacts = [];
 
-  void logProcessResult(ProcessResult result) {
-    stdout.write(result.stdout);
-    stderr.write(result.stderr);
-    combined
-      ..write(result.stdout)
-      ..write(result.stderr);
+  void logStdout(String event) {
+    stdout.write(event);
+    combined.write(event);
+  }
+
+  void logStderr(String event) {
+    stderr.write(event);
+    combined.write(event);
   }
 
   void logTelegramMessageResponse(TelegramMessage message) {

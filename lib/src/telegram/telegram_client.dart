@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart';
 
 import 'models/message.dart';
@@ -12,7 +13,6 @@ import 'models/response.dart';
 typedef TelegramFile = ({String path, String? name, String? caption});
 typedef _ValidateFiles = ({
   Iterable<Iterable<TelegramFile>> parts,
-  Iterable<TelegramFile> missing,
   Iterable<TelegramFile> large,
 });
 
@@ -52,14 +52,13 @@ class TelegramClient {
   }
 
   _ValidateFiles _validateFiles(Iterable<TelegramFile> files, int maxSize, int maxCount) {
-    final missing = <TelegramFile>[];
     final large = <TelegramFile>[];
     final filesToAttach = <TelegramFile>[];
 
     for (final telegramFile in files) {
       final file = File(telegramFile.path);
       if (!file.existsSync()) {
-        missing.add(telegramFile);
+        filesToAttach.add(telegramFile);
         continue;
       }
 
@@ -74,24 +73,26 @@ class TelegramClient {
 
     return (
       parts: filesToAttach.slices(maxCount),
-      missing: missing,
       large: large,
     );
   }
 
-  Stream<List<TelegramMessage>> sendMediaGroup({
+  Future<Response> _sendMediaGroup({
     required String chatId,
-    required Iterable<TelegramFile> media,
-    int? replyTo,
-  }) async* {
-    final files = _validateFiles(media, 50 * 1024 * 1024, 10);
-    for (final part in files.parts) {
+    required Iterable<TelegramFile> files,
+    bool? replyTo,
+  }) async {
       final attachments = [
-        for (final file in part)
+        for (final file in files)
           {
             'type': 'document',
             'media': 'attach://${basename(file.path)}',
-            if (file.caption != null)
+            if (!File(file.path).existsSync())
+              ...{
+                'caption': 'WARNING. File does not exist.',
+                'disable_content_type_detection': true,
+              }
+            else if (file.caption != null)
               'caption': file.caption,
           },
       ];
@@ -111,11 +112,28 @@ class TelegramClient {
       );
 
       multipart.files.addAll([
-        for(final file in media)
-          await MultipartFile.fromPath(basename(file.path), file.path, filename: file.name),
+        for(final file in files)
+          if (!File(file.path).existsSync())
+            MultipartFile.fromString(basename(file.path), ' ',
+              filename: file.name ?? basename(file.path),
+            )
+          else
+            await MultipartFile.fromPath(basename(file.path), file.path,
+              filename: file.name ?? basename(file.path),
+            )
       ]);
 
-      final response = await Response.fromStream(await _client.send(multipart));
+      return Response.fromStream(await _client.send(multipart));
+  }
+
+  Stream<List<TelegramMessage>> sendMediaGroup({
+    required String chatId,
+    required Iterable<TelegramFile> media,
+    int? replyTo,
+  }) async* {
+    final files = _validateFiles(media, 50 * 1024 * 1024, 10);
+    for (final part in files.parts) {
+      final response = await _sendMediaGroup(chatId: chatId, files: part);
 
       yield TelegramResponse<List<TelegramMessage>>.parse(response.body).result;
     }

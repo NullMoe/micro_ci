@@ -119,17 +119,19 @@ class MicroCI {
           case Command():
             job.directory.createSync();
 
-            final processResult = await Process.run(script.command, [],
+            final process = await Process.start(script.command, [],
               runInShell: true,
               workingDirectory: job.directory.path,
-              stdoutEncoding: utf8,
-              stderrEncoding: utf8,
               environment: environment,
             );
 
-            context.logProcessResult(processResult);
+            process.stdout.transform(const Utf8Decoder(allowMalformed: true))
+              .listen(context.logStdout);
 
-            context.lastExitCode = processResult.exitCode;
+            process.stderr.transform(const Utf8Decoder(allowMalformed: true))
+              .listen(context.logStderr);
+
+            context.lastExitCode = await process.exitCode;
             if (context.lastExitCode != 0)
               break script;
 

@@ -72,6 +72,10 @@ templates:
                       path: apk/app-release.apk.sha1
                       name: AppRelease.apk.sha1
                       caption: Release file sha1.
+                  - file:
+                      path: non-existing-file.txt
+                      caption: Caption will be overwritten.
+                      # name: file
           - builtin_action: # Sending all artifacts.
               name: tg_msg
               options:
