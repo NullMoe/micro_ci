@@ -109,10 +109,10 @@ packages:
     dependency: transitive
     description:
       name: built_value
-      sha256: ff627b645b28fb8bdb69e645f910c2458fd6b65f6585c3a53e0626024897dedf
+      sha256: a8de5955205b4d1dbbbc267daddf2178bd737e4bab8987c04a500478c9651e74
       url: "https://pub.dev"
     source: hosted
-    version: "8.6.2"
+    version: "8.6.3"
   checked_yaml:
     dependency: transitive
     description:
@@ -165,10 +165,10 @@ packages:
     dependency: "direct dev"
     description:
       name: dart_mappable_builder
-      sha256: "213001a28509a1ef524bdcbe0034dde39c93d986a59aff4bb5803ab8334b95b2"
+      sha256: dd3f95837c01569e8849da62029e311ba6368ab77ed69815990ae70f9efeb93a
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.1"
+    version: "3.2.3"
   dart_style:
     dependency: transitive
     description:
