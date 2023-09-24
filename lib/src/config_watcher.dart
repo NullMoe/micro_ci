@@ -6,7 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
-import '../tools/yaml_map_converter.dart';
+import '../tools/yaml_to_json_converter.dart';
 import 'config/config.dart';
 
 class ConfigWatcher {
@@ -27,7 +27,9 @@ class ConfigWatcher {
     if (yaml is! YamlMap)
       throw MapperException.unexpectedType(yaml.runtimeType, 'YamlMap');
 
-    return ConfigMapper.fromMap(yaml.toMap());
+    return ConfigMapper.fromMap(
+      const YamlToJsonConverter().convert(yaml) as Map<String, dynamic>,
+    );
   }
 
   FutureOr<void> _watcherUpdateConfig(FileSystemEvent event) {
