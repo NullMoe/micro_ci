@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 
 import '../micro_ci.dart';
+import '../tools/command_line_arguments_converter.dart';
 import '../tools/substitute_environment_variables.dart';
 import 'job_runner/events/github_event_handler.dart';
 import 'job_runner/job_context.dart';
@@ -117,9 +118,16 @@ class MicroCI {
 
         switch (script) {
           case Command():
-            job.directory.createSync();
+            final _command = const CommandLineArgumentsConverter()
+              .convert(script.command);
+            if (_command.isEmpty)
+              throw Exception('Command script is an empty command.');
 
-            final processResult = await Process.run(script.command, [],
+            job.directory.createSync();
+            final [ executable, ...arguments, ] = _command;
+            final processResult = await Process.run(
+              executable,
+              arguments,
               runInShell: true,
               workingDirectory: job.directory.path,
               stdoutEncoding: utf8,
