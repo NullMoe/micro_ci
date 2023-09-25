@@ -33,7 +33,7 @@ class ConfigWatcher {
   }
 
   FutureOr<void> _watcherUpdateConfig(FileSystemEvent event) {
-    if (File(event.path).absolute.path == configFile.absolute.path)
+    if (File(event.path).absolute.path != configFile.absolute.path)
       return null;
 
     logger.config('${configFile.path} was updated.');
