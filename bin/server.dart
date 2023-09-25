@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:logging/logging.dart';
 import 'package:micro_ci/micro_ci.dart';
 import 'package:micro_ci/src/telegram/models.init.dart' as telegramInit;
+import 'package:micro_ci/tools/secure_compare.dart';
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
@@ -17,9 +20,11 @@ final configWatcher = ConfigWatcher(
 final microCI = MicroCI();
 
 // Configure routes.
-final _router = Router()
+final _apiRouter = Router()
   ..get('/api/update_config', _updateConfig)
-  ..get('/api/restart_watcher', _restartWatcher)
+  ..get('/api/restart_watcher', _restartWatcher);
+
+final _ciRouter = Router()
   ..post('/events', _eventHandler);
 
 Future<Response> _updateConfig(Request req) async {
@@ -40,22 +45,39 @@ Future<Response> _restartWatcher(Request req) async {
 }
 
 Future<Response> _eventHandler(Request request) async {
-  final eventName = request.headers['x-github-event'];
-  if (eventName == null)
-    return Response(400);
+  final payload = await request.readAsString();
 
-  microCI.handleEvent(eventName, request)
-    .listen((context) => MicroCI.logger.fine('Job results:\n$context'),
-      // ignore: avoid_types_on_closure_parameters
-      onError: (Object error, StackTrace stackTrace) {
-        switch (error) {
-          case InfoException():
-            MicroCI.logger.info(error.message, error.original);
-          default:
-            MicroCI.logger.severe('Error while handling event', error, stackTrace);
-        }
-      },
-    );
+  // Verifying signature.
+  if (!request.headers.containsKey('x-hub-signature-256')) {
+    Logger('micro_ci.event_handler')
+      .finest('Signature was not provided in webhook event headers.');
+    return Response(403);
+  }
+
+  final signature = Hmac(sha256, utf8.encode(microCI.ciToken))
+    .convert(utf8.encode(payload));
+  final untrusted =  request.headers['x-hub-signature-256']!;
+  final trusted = 'sha256=$signature';
+
+  if (!secureCompare(trusted, untrusted)){
+    Logger('micro_ci.event_handler').warning('Signature verification failed.');
+    return Response(403);
+  }
+  // Verifying signature end.
+
+  final eventName = request.headers['x-github-event'];
+  if (eventName == null) {
+    Logger('micro_ci.event_handler')
+      .finest('Event type was not provided in webhook event headers.');
+    return Response(400);
+  }
+  try {
+    await microCI.handleEvent(eventName, payload)
+      .asFuture<void>()
+      .timeout(const Duration(seconds: 5));
+  } on TimeoutException catch (e, stackTrace) {
+    MicroCI.logger.finest('Event timeout', e, stackTrace);
+  }
 
   return Response(200);
 }
@@ -70,7 +92,7 @@ Middleware _checkRequestToken = (innerHandler) => (req) async {
 void main(List<String> args) async {
   telegramInit.initializeMappers();
 
-  Logger.root.level = Level.ALL;
+  Logger.root.level = Level.FINEST;
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: [${record.loggerName}]: ${record.message}');
     if (record.error != null)
@@ -90,7 +112,7 @@ void main(List<String> args) async {
 
   final serverLogger = Logger('micro_ci.server');
 
-  final handler = const Pipeline()
+  final apiHandler = const Pipeline()
     .addMiddleware(_checkRequestToken)
     .addMiddleware(
       logRequests(
@@ -100,10 +122,15 @@ void main(List<String> args) async {
           serverLogger.info(message);
         },
       ),
-    ).addHandler(_router);
+    ).addHandler(_apiRouter);
+
+  final cascade = Cascade()
+    .add(_ciRouter)
+    .add(apiHandler);
+
 
   final server = await serve(
-    handler,
+    cascade.handler,
     InternetAddress.anyIPv4,
     microCI.ciPort,
   );

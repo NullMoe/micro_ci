@@ -20,7 +20,7 @@ class CommandLineArgumentsConverter extends Converter<String, List<String>> {
   /*
    * Copyright (c) 2001-2010, JavaPLT group at Rice University (drjava@rice.edu)
    * All rights reserved.
-   * 
+   *
    * Redistribution and use in source and binary forms, with or without
    * modification, are permitted provided that the following conditions are met:
    *    * Redistributions of source code must retain the above copyright
@@ -31,7 +31,7 @@ class CommandLineArgumentsConverter extends Converter<String, List<String>> {
    *    * Neither the names of DrJava, the JavaPLT group, Rice University, nor the
    *      names of its contributors may be used to endorse or promote products
    *      derived from this software without specific prior written permission.
-   * 
+   *
    * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -100,7 +100,6 @@ class CommandLineArgumentsConverter extends Converter<String, List<String>> {
                   state = _State.normalToken;
                 } else if (state == _State.normalToken) {
                   // Whitespace ends the token; start a new one
-                  print('$currentArgument');
                   argumentsList.add(currentArgument.toString());
                   currentArgument.clear();
                   state = _State.noToken;

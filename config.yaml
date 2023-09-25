@@ -11,6 +11,8 @@ version: 1.0.0
 # HEAD_SHA
 # HEAD_REPO_FULL_NAME
 
+
+
 # ignored, but part of schema
 templates:
   build_flutter: &build_flutter
@@ -43,13 +45,12 @@ templates:
                 chat_id: -4059563862
                 type: msg
                 message: |
-                  Build started
-                  Repository: $HEAD_REPO_FULL_NAME
+                  Build started at $HEAD_REPO_FULL_NAME
                   Branch: $HEAD_BRANCH
                   Commit: $HEAD_SHA
       - name: Run shell commands
         script: # All scripts are executed in [server.exe Directory]/[job's working_directory name]
-          - docker compose --file ..\docker-compose.yaml --project-directory . up > build_logs.txt
+          - docker compose run builder > build_logs.txt
       - name: Collect and send artifacts
         script:
           - builtin_action: # Saving paths to artifacts or copying them to storage.
@@ -108,7 +109,7 @@ templates:
                 check_status:
                   state: success
                   context: ci_test/Build
-                  description: Build done.
+                  description: Build done..
 
 
 jobs:

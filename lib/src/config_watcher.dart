@@ -36,7 +36,7 @@ class ConfigWatcher {
     if (File(event.path).absolute.path != configFile.absolute.path)
       return null;
 
-    logger.config('${configFile.path} was updated.');
+    logger.config('${basename(configFile.path)} was updated.');
     return getConfig()
       .then(_configController.add, onError: _configController.addError);
   }
@@ -46,10 +46,14 @@ class ConfigWatcher {
 
     if (_watcher != null)
       await _watcher!.cancel();
-
-    _watcher = configFile.parent.watch(
-      events: FileSystemEvent.modify,
-    ).listen(_watcherUpdateConfig);
+    if (Platform.isWindows)
+      _watcher = configFile.parent.watch(
+        events: FileSystemEvent.modify,
+      ).listen(_watcherUpdateConfig);
+    else
+      _watcher = configFile.watch(
+        events: FileSystemEvent.modify,
+      ).listen(_watcherUpdateConfig);
   }
 
   Future<void> close() => _configController.close();

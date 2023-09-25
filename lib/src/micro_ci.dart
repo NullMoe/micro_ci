@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:logging/logging.dart';
-import 'package:shelf/shelf.dart';
 
 import '../micro_ci.dart';
 import '../tools/command_line_arguments_converter.dart';
@@ -60,11 +58,23 @@ class MicroCI {
     };
   }
 
-  Stream<JobContext> handleEvent(String eventName, Request request) async* {
+  StreamSubscription<JobContext> handleEvent(String eventName, String payload) =>
+    _handleEvent(eventName, payload)
+      .listen((context) => logger.finer('Job results:\n$context'),
+        // ignore: avoid_types_on_closure_parameters
+        onError: (Object error, StackTrace stackTrace) {
+          switch (error) {
+            case InfoException():
+              logger.info(error.message, error.original);
+            default:
+              logger.severe('Error while handling event', error, stackTrace);
+          }
+        },
+      );
+
+  Stream<JobContext> _handleEvent(String eventName, String payload) async* {
     if (_configState != _MicroCIConfigState.ready)
       yield* Stream.error(Exception('Valid config was not provided. Use .updateConfig method.'), StackTrace.current);
-
-    final payload = await request.readAsString();
 
     for (final MapEntry(key: name, value: job) in config.jobs.entries)
       try {
@@ -95,6 +105,7 @@ class MicroCI {
     ) = arguments;
 
     final context = JobContext(name);
+    final logger = Logger('micro_ci.job_runner');
 
     for (final task in job.tasks) {
       context
@@ -136,10 +147,16 @@ class MicroCI {
             );
 
             process.stdout.transform(const Utf8Decoder(allowMalformed: true))
-              .listen(context.logStdout);
+              .listen((data) {
+                context.logStdout(data);
+                logger.fine(data);
+              });
 
             process.stderr.transform(const Utf8Decoder(allowMalformed: true))
-              .listen(context.logStderr);
+              .listen((data) {
+                context.logStderr(data);
+                logger.fine(data);
+              });
 
             context.lastExitCode = await process.exitCode;
             if (context.lastExitCode != 0)
@@ -200,12 +217,13 @@ class MicroCI {
                   .forEach(context.logTelegramMessageResponse);
             }
           case ActionApplyCheckStatus(:final checkStatus):
-            await gitHubClient
+            logger.finest(await gitHubClient
               .createCommitStatus(
                 headRepoFullName,
                 headSha,
                 checkStatus.substituteEnvironmentVariables(environment),
-              );
+              ),
+            );
           case ActionCollectArtifacts(:final files):
             job.artifacts.createSync(recursive: true);
             context.artifacts.addAll([
