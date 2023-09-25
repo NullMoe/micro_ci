@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
@@ -123,13 +124,14 @@ class MicroCI {
             if (_command.isEmpty)
               throw Exception('Command script is an empty command.');
 
-            job.directory.createSync();
+            job.directory.createSync(recursive: true);
             final [ executable, ...arguments, ] = _command;
             final process = await Process.start(
               executable,
               arguments,
               runInShell: true,
               workingDirectory: job.directory.path,
+              includeParentEnvironment: job.envMode == EnvMode.inherit,
               environment: environment,
             );
 
@@ -199,9 +201,17 @@ class MicroCI {
             }
           case ActionApplyCheckStatus(:final checkStatus):
             await gitHubClient
-              .createCommitStatus(headRepoFullName, headSha, checkStatus);
+              .createCommitStatus(
+                headRepoFullName,
+                headSha,
+                checkStatus.substituteEnvironmentVariables(environment),
+              );
           case ActionCollectArtifacts(:final files):
-            context.artifacts.addAll(files);
+            job.artifacts.createSync(recursive: true);
+            context.artifacts.addAll([
+              for (final file in files)
+                file.substituteEnvironmentVariables(environment),
+            ]);
             await script.execute(job.directory, job.artifacts);
         }
       }

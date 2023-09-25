@@ -10,4 +10,7 @@ class ActionCollectArtifactsFileString extends ActionCollectArtifactsFile
     required super.path,
     super.store,
   });
+
+  @override
+  ActionCollectArtifactsFile substituteEnvironmentVariables(Map<String, String> env) => this;
 }

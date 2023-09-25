@@ -376,7 +376,7 @@ abstract class ActionCollectArtifactsCopyWith<
   ListCopyWith<
       $R,
       ActionCollectArtifactsFile,
-      ActionCollectArtifactsFileCopyWith<$R, ActionCollectArtifactsFile,
+      ObjectCopyWith<$R, ActionCollectArtifactsFile,
           ActionCollectArtifactsFile>> get files;
   @override
   $R call({List<ActionCollectArtifactsFile>? files});
@@ -397,9 +397,9 @@ class _ActionCollectArtifactsCopyWithImpl<$R, $Out>
   ListCopyWith<
       $R,
       ActionCollectArtifactsFile,
-      ActionCollectArtifactsFileCopyWith<$R, ActionCollectArtifactsFile,
-          ActionCollectArtifactsFile>> get files => ListCopyWith(
-      $value.files, (v, t) => v.copyWith.$chain(t), (v) => call(files: v));
+      ObjectCopyWith<$R, ActionCollectArtifactsFile,
+          ActionCollectArtifactsFile>> get files => ListCopyWith($value.files,
+      (v, t) => ObjectCopyWith(v, $identity, t), (v) => call(files: v));
   @override
   $R call({List<ActionCollectArtifactsFile>? files}) =>
       $apply(FieldCopyWithData({if (files != null) #files: files}));

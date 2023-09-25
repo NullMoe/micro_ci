@@ -44,12 +44,12 @@ templates:
                 type: msg
                 message: |
                   Build started
-                  Repository: %HEAD_REPO_FULL_NAME%
-                  Branch: %HEAD_BRANCH%
-                  Commit: %HEAD_SHA%
+                  Repository: $HEAD_REPO_FULL_NAME
+                  Branch: $HEAD_BRANCH
+                  Commit: $HEAD_SHA
       - name: Run shell commands
-        script: # All scripts are executed in [server.exe Directory]/working_directories/[job's working_directory name]
-          - docker compose --file ..\..\docker-compose.yaml --project-directory . up > build_logs.txt
+        script: # All scripts are executed in [server.exe Directory]/[job's working_directory name]
+          - docker compose --file ..\docker-compose.yaml --project-directory . up > build_logs.txt
       - name: Collect and send artifacts
         script:
           - builtin_action: # Saving paths to artifacts or copying them to storage.
@@ -66,15 +66,15 @@ templates:
                         # Used in telegram post_artifacts
                   - file:
                       path: apk/app-release.apk
-                      name: AppRelease.apk
+                      name: AppRelease-${HEAD_SHA}.apk
                       caption: Release file.
                   - file:
                       path: apk/app-release.apk.sha1
-                      name: AppRelease.apk.sha1
+                      name: AppRelease-${HEAD_SHA}.apk.sha1
                       caption: Release file sha1.
                   - file:
                       path: non-existing-file.txt
-                      caption: Caption will be overwritten.
+                      caption: Caption.
                       # name: file
           - builtin_action: # Sending all artifacts.
               name: tg_msg

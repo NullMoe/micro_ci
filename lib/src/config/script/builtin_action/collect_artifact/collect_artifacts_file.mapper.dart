@@ -44,8 +44,8 @@ class ActionCollectArtifactsFileMapper
   @override
   final MappingHook hook = const _ActionCollectArtifactsFileHook();
   static ActionCollectArtifactsFile _instantiate(DecodingData data) {
-    return ActionCollectArtifactsFile(
-        path: data.dec(_f$path), store: data.dec(_f$store));
+    throw MapperException.missingSubclass(
+        'ActionCollectArtifactsFile', 'file', '${data.value['file']}');
   }
 
   @override
@@ -61,44 +61,10 @@ class ActionCollectArtifactsFileMapper
 }
 
 mixin ActionCollectArtifactsFileMappable {
-  String toJson() {
-    return ActionCollectArtifactsFileMapper._guard(
-        (c) => c.toJson(this as ActionCollectArtifactsFile));
-  }
-
-  Map<String, dynamic> toMap() {
-    return ActionCollectArtifactsFileMapper._guard(
-        (c) => c.toMap(this as ActionCollectArtifactsFile));
-  }
-
+  String toJson();
+  Map<String, dynamic> toMap();
   ActionCollectArtifactsFileCopyWith<ActionCollectArtifactsFile,
-          ActionCollectArtifactsFile, ActionCollectArtifactsFile>
-      get copyWith => _ActionCollectArtifactsFileCopyWithImpl(
-          this as ActionCollectArtifactsFile, $identity, $identity);
-  @override
-  String toString() {
-    return ActionCollectArtifactsFileMapper._guard((c) => c.asString(this));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (runtimeType == other.runtimeType &&
-            ActionCollectArtifactsFileMapper._guard(
-                (c) => c.isEqual(this, other)));
-  }
-
-  @override
-  int get hashCode {
-    return ActionCollectArtifactsFileMapper._guard((c) => c.hash(this));
-  }
-}
-
-extension ActionCollectArtifactsFileValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, ActionCollectArtifactsFile, $Out> {
-  ActionCollectArtifactsFileCopyWith<$R, ActionCollectArtifactsFile, $Out>
-      get $asActionCollectArtifactsFile => $base
-          .as((v, t, t2) => _ActionCollectArtifactsFileCopyWithImpl(v, t, t2));
+      ActionCollectArtifactsFile, ActionCollectArtifactsFile> get copyWith;
 }
 
 abstract class ActionCollectArtifactsFileCopyWith<
@@ -108,31 +74,6 @@ abstract class ActionCollectArtifactsFileCopyWith<
   $R call({String? path, bool? store});
   ActionCollectArtifactsFileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
-}
-
-class _ActionCollectArtifactsFileCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, ActionCollectArtifactsFile, $Out>
-    implements
-        ActionCollectArtifactsFileCopyWith<$R, ActionCollectArtifactsFile,
-            $Out> {
-  _ActionCollectArtifactsFileCopyWithImpl(super.value, super.then, super.then2);
-
-  @override
-  late final ClassMapperBase<ActionCollectArtifactsFile> $mapper =
-      ActionCollectArtifactsFileMapper.ensureInitialized();
-  @override
-  $R call({String? path, bool? store}) => $apply(FieldCopyWithData(
-      {if (path != null) #path: path, if (store != null) #store: store}));
-  @override
-  ActionCollectArtifactsFile $make(CopyWithData data) =>
-      ActionCollectArtifactsFile(
-          path: data.get(#path, or: $value.path),
-          store: data.get(#store, or: $value.store));
-
-  @override
-  ActionCollectArtifactsFileCopyWith<$R2, ActionCollectArtifactsFile, $Out2>
-      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
-          _ActionCollectArtifactsFileCopyWithImpl($value, $cast, t);
 }
 
 class ActionCollectArtifactsFileObjectMapper

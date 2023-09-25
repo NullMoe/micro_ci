@@ -1,5 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
+import '../../../tools/substitute_environment_variables.dart';
 import 'check_status_state.dart';
 
 part 'check_status.mapper.dart';
@@ -19,4 +20,11 @@ class CheckStatus with CheckStatusMappable {
   final String? targetUrl;
   final String? description;
   final String? context;
+
+  CheckStatus substituteEnvironmentVariables(Map<String, String> env) =>
+    copyWith(
+      targetUrl: targetUrl?.substituteEnvironmentVariables(env),
+      description: description?.substituteEnvironmentVariables(env),
+      context: context?.substituteEnvironmentVariables(env),
+    );
 }

@@ -2,6 +2,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
 import '../../../../../tools/field_unwrapping_hook.dart';
+import '../../../../../tools/substitute_environment_variables.dart';
 
 part 'collect_artifacts_file.mapper.dart';
 part 'artifact_file_types/collect_artifacts_file_object.dart';
@@ -12,7 +13,7 @@ part 'artifact_file_types/collect_artifacts_file_string.dart';
   discriminatorKey: 'file',
   hook: _ActionCollectArtifactsFileHook(),
 )
-class ActionCollectArtifactsFile with ActionCollectArtifactsFileMappable {
+sealed class ActionCollectArtifactsFile with ActionCollectArtifactsFileMappable {
   const ActionCollectArtifactsFile({
     required this.path,
     this.store = false,
@@ -27,6 +28,8 @@ class ActionCollectArtifactsFile with ActionCollectArtifactsFileMappable {
     else
       return join(absoluteArtifactDirectoryPath, basename(path));
   }
+
+  ActionCollectArtifactsFile substituteEnvironmentVariables(Map<String, String> env);
 }
 
 // Hooks

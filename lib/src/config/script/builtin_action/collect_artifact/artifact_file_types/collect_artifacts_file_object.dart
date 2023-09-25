@@ -16,4 +16,11 @@ class ActionCollectArtifactsFileObject extends ActionCollectArtifactsFile
 
   final String? name;
   final String? caption;
+
+  @override
+  ActionCollectArtifactsFile substituteEnvironmentVariables(Map<String, String> env) =>
+    copyWith(
+      name: name?.substituteEnvironmentVariables(env),
+      caption: caption?.substituteEnvironmentVariables(env),
+    );
 }

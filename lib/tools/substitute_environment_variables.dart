@@ -1,6 +1,8 @@
 extension SubstituteEnvironmentVariables on String {
+  static final _pattern = RegExp(r'\$(?:(\w+)|(?:\{(\w+)\}))');
+
   String substituteEnvironmentVariables(Map<String, String> env) =>
-    replaceAllMapped(RegExp('%([A-Za-z0-9_-]+)%'),
-      (match) => env[match.group(1)] ?? '%${match.group(1)}%',
+    replaceAllMapped(_pattern, (match) =>
+      env[match.group(1) ?? match.group(2)] ?? match.group(0)!,
     );
 }

@@ -35,19 +35,13 @@ class Job with JobMappable {
   final Map<String, String> env;
   final EnvMode envMode;
 
-  Directory get directory {
-    if (isAbsolute(workingDirectory))
-      return Directory(workingDirectory);
-
-    return Directory(join(Directory.current.path, 'working_directories', workingDirectory))
-      ..createSync(recursive: true);
-  }
+  Directory get directory =>
+    Directory(workingDirectory);
 
   Directory get artifacts {
     if (isAbsolute(artifactsDirectory))
       return Directory(artifactsDirectory);
 
-    return Directory(join(directory.path, artifactsDirectory))
-      ..createSync(recursive: true);
+    return Directory(join(directory.path, artifactsDirectory));
   }
 }
