@@ -1,10 +1,11 @@
 import 'package:glob/glob.dart';
 
 import '../../../micro_ci.dart';
+import '../../github/webhook_models/payload.dart';
 import '../job_runner_arguments.dart';
 
 
-typedef _EventHandler<T extends Event> = JobRunnerArguments Function(List<T> filters, String payload);
+typedef _EventHandler<T extends Event, J extends WebHookPayload> = JobRunnerArguments Function(List<T> filters, J payload);
 typedef _EventsMapValue = (List<Event>, _EventHandler);
 
 class GitHubEventHandler {
@@ -22,12 +23,10 @@ class GitHubEventHandler {
     )
   };
 
-  _EventHandler _wrapHandler<T extends Event>(_EventHandler<T> handler) =>
-    (filters, payload) => handler(filters as List<T>, payload);
+  _EventHandler _wrapHandler<T extends Event, J extends WebHookPayload>(_EventHandler<T, J> handler) =>
+    (filters, payload) => handler(filters as List<T>, payload as J);
 
-  JobRunnerArguments _handleReviewEvent(List<LocalReviewEvent> filters, String payload) {
-    final review = WebHookPullRequestReview.parse(payload);
-
+  JobRunnerArguments _handleReviewEvent(List<LocalReviewEvent> filters, WebHookPullRequestReview review) {
     switch (review) {
       case WebHookPullRequestReviewSubmitted():
         if (review.pullRequest.base.repo.fullName != review.pullRequest.head.repo.fullName)
@@ -61,9 +60,7 @@ class GitHubEventHandler {
     }
   }
 
-  JobRunnerArguments _handlePushEvent(List<PushEvent> filters, String payload) {
-    final push = WebHookPush.parse(payload);
-
+  JobRunnerArguments _handlePushEvent(List<PushEvent> filters, WebHookPush push) {
     if (!filters.any((pushEvent) =>
       pushEvent.head.any((name) =>
         Glob(name).matches(push.branchName),
@@ -81,7 +78,7 @@ class GitHubEventHandler {
     );
   }
 
-  JobRunnerArguments handleEvent(String eventName, String payload) =>
+  JobRunnerArguments handleEvent(String eventName, WebHookPayload payload) =>
     switch (_eventsMap[eventName]) {
       _EventsMapValue($1: final filters, $2: final handler) =>
         filters.isNotEmpty

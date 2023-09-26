@@ -1,4 +1,4 @@
-part of 'pull_request_review.dart';
+part of '../payload.dart';
 
 
 @MappableClass(
@@ -17,4 +17,7 @@ class WebHookPullRequestReviewSubmitted extends WebHookPullRequestReview
   final WebHookReview review;
   final WebHookPullRequest pullRequest;
   final WebHookUser sender;
+
+  @override
+  String get fullName => pullRequest.base.repo.fullName;
 }

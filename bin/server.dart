@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:logging/logging.dart';
 import 'package:micro_ci/micro_ci.dart';
 import 'package:micro_ci/src/telegram/models.init.dart' as telegramInit;
@@ -71,12 +72,16 @@ Future<Response> _eventHandler(Request request) async {
       .finest('Event type was not provided in webhook event headers.');
     return Response(400);
   }
+
   try {
     await microCI.handleEvent(eventName, payload)
       .asFuture<void>()
       .timeout(const Duration(seconds: 5));
   } on TimeoutException catch (e, stackTrace) {
     MicroCI.logger.finest('Event timeout', e, stackTrace);
+  } on MapperException catch (e, stackTrace) {
+    MicroCI.logger.fine('Mapper failed to decode event payload.', e, stackTrace);
+    return Response(400);
   }
 
   return Response(200);
@@ -92,7 +97,7 @@ Middleware _checkRequestToken = (innerHandler) => (req) async {
 void main(List<String> args) async {
   telegramInit.initializeMappers();
 
-  Logger.root.level = Level.FINEST;
+  Logger.root.level = Level.CONFIG;
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: [${record.loggerName}]: ${record.message}');
     if (record.error != null)

@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import '../micro_ci.dart';
 import '../tools/command_line_arguments_converter.dart';
 import '../tools/substitute_environment_variables.dart';
+import 'github/webhook_models/payload.dart';
 import 'job_runner/events/github_event_handler.dart';
 import 'job_runner/job_context.dart';
 import 'job_runner/job_runner_arguments.dart';
@@ -76,18 +77,28 @@ class MicroCI {
     if (_configState != _MicroCIConfigState.ready)
       yield* Stream.error(Exception('Valid config was not provided. Use .updateConfig method.'), StackTrace.current);
 
-    for (final MapEntry(key: name, value: job) in config.jobs.entries)
+    final webHookPayload = WebHookPayload.parse(payload);
+    for (final MapEntry(key: name, value: job) in config.jobs.entries) {
+      final lowerCaseRepoFullName = webHookPayload.fullName.toLowerCase();
+      if (job.repositories.isNotEmpty && !job.repositories.any((e) => e.toLowerCase() == lowerCaseRepoFullName)) {
+        logger.fine(FilterException('Repository does not match filters.'));
+        continue;
+      }
+
       try {
+        final arguments = _jobHandlers[name]!.handleEvent(eventName, webHookPayload);
+
         yield await _runJob(
           name: name,
           job: job,
-          arguments: _jobHandlers[name]!.handleEvent(eventName, payload),
+          arguments: arguments,
         );
       } on FilterException catch (e) {
         logger.fine(e);
       } catch (e, stackTrace) {
         yield* Stream.error(e, stackTrace);
       }
+    }
   }
 
   Future<JobContext> _runJob({

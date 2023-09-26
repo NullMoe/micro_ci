@@ -19,6 +19,7 @@ class Job with JobMappable {
     required this.tasks,
     required this.workingDirectory,
     this.artifactsDirectory = '__artifacts',
+    this.repositories = const [],
     this.env = const {},
     this.envMode = EnvMode.inherit,
     this.queueMode = QueueMode.restart,
@@ -27,6 +28,7 @@ class Job with JobMappable {
   final List<Event> events;
   final List<Task> tasks;
   final QueueMode queueMode;
+  final List<String> repositories;
   final String workingDirectory;
   final String artifactsDirectory;
   @MappableField(

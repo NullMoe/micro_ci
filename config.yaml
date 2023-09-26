@@ -119,6 +119,8 @@ jobs:
     artifacts_directory: release_artifacts # Default '__artifacts'.
       # Relative to working_directory or absolute.
     # env_mode: inherit # Implicit. Enum: replace, inherit.
+    # repositories: # Will accept any repository if empty.
+    #   - nullmoe/micro_ci
     env: # Optional.
       - TOKEN=123
     events: # Required
@@ -135,6 +137,7 @@ jobs:
       - local_review:
           head: # From.
             - dev/*
+            - greed
           base: # Optional. Into.
             - master
     <<: *build_flutter

@@ -1,4 +1,4 @@
-part of 'pull_request_review.dart';
+part of '../payload.dart';
 
 
 @MappableClass(
@@ -6,4 +6,7 @@ part of 'pull_request_review.dart';
 )
 class WebHookPullRequestReviewOther extends WebHookPullRequestReview with WebHookPullRequestReviewOtherMappable {
   const WebHookPullRequestReviewOther();
+
+  @override
+  String get fullName => throw UnimplementedError();
 }

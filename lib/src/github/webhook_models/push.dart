@@ -1,14 +1,10 @@
-import 'package:dart_mappable/dart_mappable.dart';
-
-import '../api_models/api_models.dart';
-import 'repository.dart';
-import 'user.dart';
-
-part 'push.mapper.dart';
+part of 'payload.dart';
 
 
-@MappableClass()
-class WebHookPush with WebHookPushMappable {
+@MappableClass(
+  discriminatorValue: WebHookPush._isPushEvent,
+)
+class WebHookPush extends WebHookPayload with WebHookPushMappable {
   const WebHookPush({
     required this.after,
     required this.baseRef,
@@ -41,6 +37,10 @@ class WebHookPush with WebHookPushMappable {
   final WebHookRepository repository;
   final WebHookUser? sender;
 
+  @override
+  String get fullName => repository.fullName;
   String get branchName => ref.split('/').sublist(2).join('/');
   String get shortHash => after.substring(0, 7);
+
+  static bool _isPushEvent(Object? value) => value is Map && value.containsKey('pusher');
 }

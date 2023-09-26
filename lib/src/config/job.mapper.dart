@@ -39,6 +39,9 @@ class JobMapper extends ClassMapperBase<Job> {
   static const Field<Job, String> _f$artifactsDirectory = Field(
       'artifactsDirectory', _$artifactsDirectory,
       key: 'artifacts_directory', opt: true, def: '__artifacts');
+  static List<String> _$repositoyies(Job v) => v.repositories;
+  static const Field<Job, List<String>> _f$repositoyies =
+      Field('repositoyies', _$repositoyies, opt: true, def: const []);
   static Map<String, String> _$env(Job v) => v.env;
   static const Field<Job, Map<String, String>> _f$env = Field('env', _$env,
       opt: true, def: const {}, hook: ListOfStringsToMapHook());
@@ -56,6 +59,7 @@ class JobMapper extends ClassMapperBase<Job> {
     #tasks: _f$tasks,
     #workingDirectory: _f$workingDirectory,
     #artifactsDirectory: _f$artifactsDirectory,
+    #repositoyies: _f$repositoyies,
     #env: _f$env,
     #envMode: _f$envMode,
     #queueMode: _f$queueMode,
@@ -67,6 +71,7 @@ class JobMapper extends ClassMapperBase<Job> {
         tasks: data.dec(_f$tasks),
         workingDirectory: data.dec(_f$workingDirectory),
         artifactsDirectory: data.dec(_f$artifactsDirectory),
+        repositories: data.dec(_f$repositoyies),
         env: data.dec(_f$env),
         envMode: data.dec(_f$envMode),
         queueMode: data.dec(_f$queueMode));
@@ -122,12 +127,14 @@ abstract class JobCopyWith<$R, $In extends Job, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, Event, ObjectCopyWith<$R, Event, Event>> get events;
   ListCopyWith<$R, Task, TaskCopyWith<$R, Task, Task>> get tasks;
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get repositoyies;
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get env;
   $R call(
       {List<Event>? events,
       List<Task>? tasks,
       String? workingDirectory,
       String? artifactsDirectory,
+      List<String>? repositoyies,
       Map<String, String>? env,
       EnvMode? envMode,
       QueueMode? queueMode});
@@ -149,6 +156,12 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
       ListCopyWith(
           $value.tasks, (v, t) => v.copyWith.$chain(t), (v) => call(tasks: v));
   @override
+  ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>>
+      get repositoyies => ListCopyWith(
+          $value.repositories,
+          (v, t) => ObjectCopyWith(v, $identity, t),
+          (v) => call(repositoyies: v));
+  @override
   MapCopyWith<$R, String, String, ObjectCopyWith<$R, String, String>> get env =>
       MapCopyWith($value.env, (v, t) => ObjectCopyWith(v, $identity, t),
           (v) => call(env: v));
@@ -158,6 +171,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
           List<Task>? tasks,
           String? workingDirectory,
           String? artifactsDirectory,
+          List<String>? repositoyies,
           Map<String, String>? env,
           EnvMode? envMode,
           QueueMode? queueMode}) =>
@@ -166,6 +180,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
         if (tasks != null) #tasks: tasks,
         if (workingDirectory != null) #workingDirectory: workingDirectory,
         if (artifactsDirectory != null) #artifactsDirectory: artifactsDirectory,
+        if (repositoyies != null) #repositoyies: repositoyies,
         if (env != null) #env: env,
         if (envMode != null) #envMode: envMode,
         if (queueMode != null) #queueMode: queueMode
@@ -178,6 +193,7 @@ class _JobCopyWithImpl<$R, $Out> extends ClassCopyWithBase<$R, Job, $Out>
           data.get(#workingDirectory, or: $value.workingDirectory),
       artifactsDirectory:
           data.get(#artifactsDirectory, or: $value.artifactsDirectory),
+      repositories: data.get(#repositoyies, or: $value.repositories),
       env: data.get(#env, or: $value.env),
       envMode: data.get(#envMode, or: $value.envMode),
       queueMode: data.get(#queueMode, or: $value.queueMode));
