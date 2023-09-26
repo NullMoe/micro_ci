@@ -97,7 +97,7 @@ Middleware _checkRequestToken = (innerHandler) => (req) async {
 void main(List<String> args) async {
   telegramInit.initializeMappers();
 
-  Logger.root.level = Level.CONFIG;
+  Logger.root.level = Level.LEVELS[int.parse(args.elementAtOrNull(0) ?? '4')];
   Logger.root.onRecord.listen((record) {
     print('${record.level.name}: ${record.time}: [${record.loggerName}]: ${record.message}');
     if (record.error != null)
