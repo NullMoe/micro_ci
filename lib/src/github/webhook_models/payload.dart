@@ -6,12 +6,13 @@ part 'push.dart';
 part 'pull_request_review/pull_request_review.dart';
 part 'pull_request_review/pull_request_review_submitted.dart';
 part 'pull_request_review/pull_request_review_unknown.dart';
+part 'payload_unknown.dart';
 part 'payload.mapper.dart';
 
 @MappableClass(
   discriminatorKey: 'pusher',
 )
-sealed class WebHookPayload {
+sealed class WebHookPayload with WebHookPayloadMappable {
   const WebHookPayload();
 
   factory WebHookPayload.parse(String json) =>

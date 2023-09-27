@@ -14,6 +14,7 @@ class WebHookPayloadMapper extends ClassMapperBase<WebHookPayload> {
       MapperContainer.globals.use(_instance = WebHookPayloadMapper._());
       WebHookPushMapper.ensureInitialized();
       WebHookPullRequestReviewMapper.ensureInitialized();
+      WebHookPayloadUnknownMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -322,7 +323,7 @@ class WebHookPullRequestReviewMapper
           .use(_instance = WebHookPullRequestReviewMapper._());
       WebHookPayloadMapper.ensureInitialized().addSubMapper(_instance!);
       WebHookPullRequestReviewSubmittedMapper.ensureInitialized();
-      WebHookPullRequestReviewOtherMapper.ensureInitialized();
+      WebHookPullRequestReviewUnknownMapper.ensureInitialized();
     }
     return _instance!;
   }
@@ -341,7 +342,8 @@ class WebHookPullRequestReviewMapper
   @override
   final String discriminatorKey = 'pusher';
   @override
-  final dynamic discriminatorValue = MappableClass.useAsDefault;
+  final dynamic discriminatorValue =
+      WebHookPullRequestReview._isPullRequestReviewEvent;
   @override
   late final ClassMapperBase superMapper =
       WebHookPayloadMapper.ensureInitialized();
@@ -576,15 +578,15 @@ class _WebHookPullRequestReviewSubmittedCopyWithImpl<$R, $Out>
       _WebHookPullRequestReviewSubmittedCopyWithImpl($value, $cast, t);
 }
 
-class WebHookPullRequestReviewOtherMapper
-    extends SubClassMapperBase<WebHookPullRequestReviewOther> {
-  WebHookPullRequestReviewOtherMapper._();
+class WebHookPullRequestReviewUnknownMapper
+    extends SubClassMapperBase<WebHookPullRequestReviewUnknown> {
+  WebHookPullRequestReviewUnknownMapper._();
 
-  static WebHookPullRequestReviewOtherMapper? _instance;
-  static WebHookPullRequestReviewOtherMapper ensureInitialized() {
+  static WebHookPullRequestReviewUnknownMapper? _instance;
+  static WebHookPullRequestReviewUnknownMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals
-          .use(_instance = WebHookPullRequestReviewOtherMapper._());
+          .use(_instance = WebHookPullRequestReviewUnknownMapper._());
       WebHookPullRequestReviewMapper.ensureInitialized()
           .addSubMapper(_instance!);
     }
@@ -597,10 +599,10 @@ class WebHookPullRequestReviewOtherMapper
   }
 
   @override
-  final String id = 'WebHookPullRequestReviewOther';
+  final String id = 'WebHookPullRequestReviewUnknown';
 
   @override
-  final Map<Symbol, Field<WebHookPullRequestReviewOther, dynamic>> fields =
+  final Map<Symbol, Field<WebHookPullRequestReviewUnknown, dynamic>> fields =
       const {};
 
   @override
@@ -611,93 +613,212 @@ class WebHookPullRequestReviewOtherMapper
   late final ClassMapperBase superMapper =
       WebHookPullRequestReviewMapper.ensureInitialized();
 
-  static WebHookPullRequestReviewOther _instantiate(DecodingData data) {
-    return WebHookPullRequestReviewOther();
+  static WebHookPullRequestReviewUnknown _instantiate(DecodingData data) {
+    return WebHookPullRequestReviewUnknown();
   }
 
   @override
   final Function instantiate = _instantiate;
 
-  static WebHookPullRequestReviewOther fromMap(Map<String, dynamic> map) {
-    return _guard((c) => c.fromMap<WebHookPullRequestReviewOther>(map));
+  static WebHookPullRequestReviewUnknown fromMap(Map<String, dynamic> map) {
+    return _guard((c) => c.fromMap<WebHookPullRequestReviewUnknown>(map));
   }
 
-  static WebHookPullRequestReviewOther fromJson(String json) {
-    return _guard((c) => c.fromJson<WebHookPullRequestReviewOther>(json));
+  static WebHookPullRequestReviewUnknown fromJson(String json) {
+    return _guard((c) => c.fromJson<WebHookPullRequestReviewUnknown>(json));
   }
 }
 
-mixin WebHookPullRequestReviewOtherMappable {
+mixin WebHookPullRequestReviewUnknownMappable {
   String toJson() {
-    return WebHookPullRequestReviewOtherMapper._guard(
-        (c) => c.toJson(this as WebHookPullRequestReviewOther));
+    return WebHookPullRequestReviewUnknownMapper._guard(
+        (c) => c.toJson(this as WebHookPullRequestReviewUnknown));
   }
 
   Map<String, dynamic> toMap() {
-    return WebHookPullRequestReviewOtherMapper._guard(
-        (c) => c.toMap(this as WebHookPullRequestReviewOther));
+    return WebHookPullRequestReviewUnknownMapper._guard(
+        (c) => c.toMap(this as WebHookPullRequestReviewUnknown));
   }
 
-  WebHookPullRequestReviewOtherCopyWith<WebHookPullRequestReviewOther,
-          WebHookPullRequestReviewOther, WebHookPullRequestReviewOther>
-      get copyWith => _WebHookPullRequestReviewOtherCopyWithImpl(
-          this as WebHookPullRequestReviewOther, $identity, $identity);
+  WebHookPullRequestReviewUnknownCopyWith<WebHookPullRequestReviewUnknown,
+          WebHookPullRequestReviewUnknown, WebHookPullRequestReviewUnknown>
+      get copyWith => _WebHookPullRequestReviewUnknownCopyWithImpl(
+          this as WebHookPullRequestReviewUnknown, $identity, $identity);
   @override
   String toString() {
-    return WebHookPullRequestReviewOtherMapper._guard((c) => c.asString(this));
+    return WebHookPullRequestReviewUnknownMapper._guard(
+        (c) => c.asString(this));
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (runtimeType == other.runtimeType &&
-            WebHookPullRequestReviewOtherMapper._guard(
+            WebHookPullRequestReviewUnknownMapper._guard(
                 (c) => c.isEqual(this, other)));
   }
 
   @override
   int get hashCode {
-    return WebHookPullRequestReviewOtherMapper._guard((c) => c.hash(this));
+    return WebHookPullRequestReviewUnknownMapper._guard((c) => c.hash(this));
   }
 }
 
-extension WebHookPullRequestReviewOtherValueCopy<$R, $Out>
-    on ObjectCopyWith<$R, WebHookPullRequestReviewOther, $Out> {
-  WebHookPullRequestReviewOtherCopyWith<$R, WebHookPullRequestReviewOther, $Out>
-      get $asWebHookPullRequestReviewOther => $base.as(
-          (v, t, t2) => _WebHookPullRequestReviewOtherCopyWithImpl(v, t, t2));
+extension WebHookPullRequestReviewUnknownValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, WebHookPullRequestReviewUnknown, $Out> {
+  WebHookPullRequestReviewUnknownCopyWith<$R, WebHookPullRequestReviewUnknown,
+          $Out>
+      get $asWebHookPullRequestReviewUnknown => $base.as(
+          (v, t, t2) => _WebHookPullRequestReviewUnknownCopyWithImpl(v, t, t2));
 }
 
-abstract class WebHookPullRequestReviewOtherCopyWith<
+abstract class WebHookPullRequestReviewUnknownCopyWith<
     $R,
-    $In extends WebHookPullRequestReviewOther,
+    $In extends WebHookPullRequestReviewUnknown,
     $Out> implements WebHookPullRequestReviewCopyWith<$R, $In, $Out> {
   @override
   $R call();
-  WebHookPullRequestReviewOtherCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+  WebHookPullRequestReviewUnknownCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
 
-class _WebHookPullRequestReviewOtherCopyWithImpl<$R, $Out>
-    extends ClassCopyWithBase<$R, WebHookPullRequestReviewOther, $Out>
+class _WebHookPullRequestReviewUnknownCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, WebHookPullRequestReviewUnknown, $Out>
     implements
-        WebHookPullRequestReviewOtherCopyWith<$R, WebHookPullRequestReviewOther,
-            $Out> {
-  _WebHookPullRequestReviewOtherCopyWithImpl(
+        WebHookPullRequestReviewUnknownCopyWith<$R,
+            WebHookPullRequestReviewUnknown, $Out> {
+  _WebHookPullRequestReviewUnknownCopyWithImpl(
       super.value, super.then, super.then2);
 
   @override
-  late final ClassMapperBase<WebHookPullRequestReviewOther> $mapper =
-      WebHookPullRequestReviewOtherMapper.ensureInitialized();
+  late final ClassMapperBase<WebHookPullRequestReviewUnknown> $mapper =
+      WebHookPullRequestReviewUnknownMapper.ensureInitialized();
   @override
   $R call() => $apply(FieldCopyWithData({}));
   @override
-  WebHookPullRequestReviewOther $make(CopyWithData data) =>
-      WebHookPullRequestReviewOther();
+  WebHookPullRequestReviewUnknown $make(CopyWithData data) =>
+      WebHookPullRequestReviewUnknown();
 
   @override
-  WebHookPullRequestReviewOtherCopyWith<$R2, WebHookPullRequestReviewOther,
+  WebHookPullRequestReviewUnknownCopyWith<$R2, WebHookPullRequestReviewUnknown,
       $Out2> $chain<$R2, $Out2>(
           Then<$Out2, $R2> t) =>
-      _WebHookPullRequestReviewOtherCopyWithImpl($value, $cast, t);
+      _WebHookPullRequestReviewUnknownCopyWithImpl($value, $cast, t);
+}
+
+class WebHookPayloadUnknownMapper
+    extends SubClassMapperBase<WebHookPayloadUnknown> {
+  WebHookPayloadUnknownMapper._();
+
+  static WebHookPayloadUnknownMapper? _instance;
+  static WebHookPayloadUnknownMapper ensureInitialized() {
+    if (_instance == null) {
+      MapperContainer.globals.use(_instance = WebHookPayloadUnknownMapper._());
+      WebHookPayloadMapper.ensureInitialized().addSubMapper(_instance!);
+    }
+    return _instance!;
+  }
+
+  static T _guard<T>(T Function(MapperContainer) fn) {
+    ensureInitialized();
+    return fn(MapperContainer.globals);
+  }
+
+  @override
+  final String id = 'WebHookPayloadUnknown';
+
+  @override
+  final Map<Symbol, Field<WebHookPayloadUnknown, dynamic>> fields = const {};
+
+  @override
+  final String discriminatorKey = 'pusher';
+  @override
+  final dynamic discriminatorValue = MappableClass.useAsDefault;
+  @override
+  late final ClassMapperBase superMapper =
+      WebHookPayloadMapper.ensureInitialized();
+
+  static WebHookPayloadUnknown _instantiate(DecodingData data) {
+    return WebHookPayloadUnknown();
+  }
+
+  @override
+  final Function instantiate = _instantiate;
+
+  static WebHookPayloadUnknown fromMap(Map<String, dynamic> map) {
+    return _guard((c) => c.fromMap<WebHookPayloadUnknown>(map));
+  }
+
+  static WebHookPayloadUnknown fromJson(String json) {
+    return _guard((c) => c.fromJson<WebHookPayloadUnknown>(json));
+  }
+}
+
+mixin WebHookPayloadUnknownMappable {
+  String toJson() {
+    return WebHookPayloadUnknownMapper._guard(
+        (c) => c.toJson(this as WebHookPayloadUnknown));
+  }
+
+  Map<String, dynamic> toMap() {
+    return WebHookPayloadUnknownMapper._guard(
+        (c) => c.toMap(this as WebHookPayloadUnknown));
+  }
+
+  WebHookPayloadUnknownCopyWith<WebHookPayloadUnknown, WebHookPayloadUnknown,
+          WebHookPayloadUnknown>
+      get copyWith => _WebHookPayloadUnknownCopyWithImpl(
+          this as WebHookPayloadUnknown, $identity, $identity);
+  @override
+  String toString() {
+    return WebHookPayloadUnknownMapper._guard((c) => c.asString(this));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (runtimeType == other.runtimeType &&
+            WebHookPayloadUnknownMapper._guard((c) => c.isEqual(this, other)));
+  }
+
+  @override
+  int get hashCode {
+    return WebHookPayloadUnknownMapper._guard((c) => c.hash(this));
+  }
+}
+
+extension WebHookPayloadUnknownValueCopy<$R, $Out>
+    on ObjectCopyWith<$R, WebHookPayloadUnknown, $Out> {
+  WebHookPayloadUnknownCopyWith<$R, WebHookPayloadUnknown, $Out>
+      get $asWebHookPayloadUnknown =>
+          $base.as((v, t, t2) => _WebHookPayloadUnknownCopyWithImpl(v, t, t2));
+}
+
+abstract class WebHookPayloadUnknownCopyWith<
+    $R,
+    $In extends WebHookPayloadUnknown,
+    $Out> implements WebHookPayloadCopyWith<$R, $In, $Out> {
+  @override
+  $R call();
+  WebHookPayloadUnknownCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(
+      Then<$Out2, $R2> t);
+}
+
+class _WebHookPayloadUnknownCopyWithImpl<$R, $Out>
+    extends ClassCopyWithBase<$R, WebHookPayloadUnknown, $Out>
+    implements WebHookPayloadUnknownCopyWith<$R, WebHookPayloadUnknown, $Out> {
+  _WebHookPayloadUnknownCopyWithImpl(super.value, super.then, super.then2);
+
+  @override
+  late final ClassMapperBase<WebHookPayloadUnknown> $mapper =
+      WebHookPayloadUnknownMapper.ensureInitialized();
+  @override
+  $R call() => $apply(FieldCopyWithData({}));
+  @override
+  WebHookPayloadUnknown $make(CopyWithData data) => WebHookPayloadUnknown();
+
+  @override
+  WebHookPayloadUnknownCopyWith<$R2, WebHookPayloadUnknown, $Out2>
+      $chain<$R2, $Out2>(Then<$Out2, $R2> t) =>
+          _WebHookPayloadUnknownCopyWithImpl($value, $cast, t);
 }

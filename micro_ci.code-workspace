@@ -11,7 +11,10 @@
 				"name": "Dart",
 				"type": "dart",
 				"request": "launch",
-				"program": "bin/server.dart"
+				"program": "bin/server.dart",
+				"args": [
+					"0",
+				]
 			}
 		],
 		"compounds": []

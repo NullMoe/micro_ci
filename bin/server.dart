@@ -82,6 +82,9 @@ Future<Response> _eventHandler(Request request) async {
   } on MapperException catch (e, stackTrace) {
     MicroCI.logger.fine('Mapper failed to decode event payload.', e, stackTrace);
     return Response(400);
+  } catch (e, stackTrace) {
+    MicroCI.logger.severe('Exception during event handling.', e, stackTrace);
+    return Response(500);
   }
 
   return Response(200);

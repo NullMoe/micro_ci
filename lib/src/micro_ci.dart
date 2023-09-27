@@ -75,13 +75,17 @@ class MicroCI {
 
   Stream<JobContext> _handleEvent(String eventName, String payload) async* {
     if (_configState != _MicroCIConfigState.ready)
-      yield* Stream.error(Exception('Valid config was not provided. Use .updateConfig method.'), StackTrace.current);
+      throw Exception('Valid config was not provided. Use .updateConfig method.');
 
     final webHookPayload = WebHookPayload.parse(payload);
+    // TODO: rewrite Webhook response parsing.
+    if (webHookPayload is WebHookPayloadUnknown || webHookPayload is WebHookPullRequestReviewUnknown)
+      throw Exception('Webhook payload is unknown.');
+
     for (final MapEntry(key: name, value: job) in config.jobs.entries) {
       final lowerCaseRepoFullName = webHookPayload.fullName.toLowerCase();
       if (job.repositories.isNotEmpty && !job.repositories.any((e) => e.toLowerCase() == lowerCaseRepoFullName)) {
-        logger.fine(FilterException('Repository does not match filters.'));
+        yield* Stream.error(FilterException('Repository does not match filters.'), StackTrace.current);
         continue;
       }
 
@@ -156,6 +160,8 @@ class MicroCI {
               includeParentEnvironment: job.envMode == EnvMode.inherit,
               environment: environment,
             );
+
+            context.combined.write('$executable: ');
 
             process.stdout.transform(const Utf8Decoder(allowMalformed: true))
               .listen((data) {

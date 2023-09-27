@@ -3,7 +3,7 @@ part of '../payload.dart';
 
 @MappableClass(
   discriminatorKey: 'action',
-  discriminatorValue: MappableClass.useAsDefault,
+  discriminatorValue: WebHookPullRequestReview._isPullRequestReviewEvent,
 )
 sealed class WebHookPullRequestReview extends WebHookPayload with WebHookPullRequestReviewMappable {
   const WebHookPullRequestReview();
@@ -13,4 +13,7 @@ sealed class WebHookPullRequestReview extends WebHookPayload with WebHookPullReq
 
   @override
   String get fullName;
+
+  /// TODO: this is bad.
+  static bool _isPullRequestReviewEvent(Object? value) => value is Map && value.containsKey('pull_request');
 }
