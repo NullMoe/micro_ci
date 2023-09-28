@@ -7,10 +7,13 @@ import 'package:logging/logging.dart';
 import '../micro_ci.dart';
 import '../tools/command_line_arguments_converter.dart';
 import '../tools/substitute_environment_variables.dart';
-import 'github/webhook_models/payload.dart';
-import 'job_runner/events/github_event_handler.dart';
+import 'clients/github_client.dart';
+import 'clients/telegram_client.dart';
+import 'job_runner/github_event_handler.dart';
 import 'job_runner/job_context.dart';
 import 'job_runner/job_runner_arguments.dart';
+import 'models/config/models.dart';
+import 'models/github/webhook_models/payload.dart';
 
 
 enum _MicroCIConfigState {

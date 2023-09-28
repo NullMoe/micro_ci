@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-import '../../tools/list_of_strings_to_map_hook.dart';
+import '../../../tools/list_of_strings_to_map_hook.dart';
 import 'script/script.dart';
 
 part 'task.mapper.dart';

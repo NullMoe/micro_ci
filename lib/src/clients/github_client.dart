@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 
-import 'api_models/check_status.dart';
+import '../models/github/api_models/check_status.dart';
 
 class GitHubClient {
   GitHubClient({required this.token, Client? client,})

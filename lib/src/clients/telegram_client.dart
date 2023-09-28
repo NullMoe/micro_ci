@@ -5,8 +5,8 @@ import 'package:collection/collection.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
 
-import 'models/message.dart';
-import 'models/response.dart';
+import '../models/telegram/models/message.dart';
+import '../models/telegram/models/response.dart';
 
 
 typedef TelegramFile = ({String path, String? name, String? caption});

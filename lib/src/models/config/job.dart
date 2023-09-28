@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
-import '../../tools/list_of_strings_to_map_hook.dart';
+import '../../../tools/list_of_strings_to_map_hook.dart';
 import 'env_mode.dart';
 import 'event/event.dart';
 import 'queue_mode.dart';

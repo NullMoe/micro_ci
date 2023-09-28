@@ -6,7 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:logging/logging.dart';
 import 'package:micro_ci/micro_ci.dart';
-import 'package:micro_ci/src/telegram/models.init.dart' as telegramInit;
+import 'package:micro_ci/telegram_init.dart' as telegramInit;
 import 'package:micro_ci/tools/secure_compare.dart';
 import 'package:path/path.dart';
 import 'package:shelf/shelf.dart';

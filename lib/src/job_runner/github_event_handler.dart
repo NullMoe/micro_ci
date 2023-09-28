@@ -1,8 +1,8 @@
 import 'package:glob/glob.dart';
 
-import '../../../micro_ci.dart';
-import '../../github/webhook_models/payload.dart';
-import '../job_runner_arguments.dart';
+import '../../micro_ci.dart';
+import '../models/github/webhook_models/payload.dart';
+import 'job_runner_arguments.dart';
 
 
 typedef _EventHandler<T extends Event, J extends WebHookPayload> = JobRunnerArguments Function(List<T> filters, J payload);

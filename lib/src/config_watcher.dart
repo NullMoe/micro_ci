@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
 import '../tools/yaml_to_json_converter.dart';
-import 'config/config.dart';
+import 'models/config/config.dart';
 
 class ConfigWatcher {
   ConfigWatcher(this.configFile) :

@@ -1,10 +1,10 @@
-export 'src/config/models.dart';
+export 'src/clients/github_client.dart';
+export 'src/clients/telegram_client.dart';
 export 'src/config_watcher.dart';
 export 'src/exception/filter_exception.dart';
 export 'src/exception/info_exception.dart';
-export 'src/github/github_client.dart';
-export 'src/github/models.dart';
 export 'src/micro_ci.dart';
+export 'src/models/config/models.dart';
+export 'src/models/github/models.dart';
+export 'src/models/telegram/models.dart';
 export 'src/server_config.dart';
-export 'src/telegram/models.dart';
-export 'src/telegram/telegram_client.dart';

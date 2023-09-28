@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
-import '../../../tools/field_unwrapping_hook.dart';
+import '../../../../tools/field_unwrapping_hook.dart';
 import '../../github/models.dart';
 import 'builtin_action/collect_artifact/collect_artifacts_file.dart';
 

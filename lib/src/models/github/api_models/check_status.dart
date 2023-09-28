@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-import '../../../tools/substitute_environment_variables.dart';
+import '../../../../tools/substitute_environment_variables.dart';
 import 'check_status_state.dart';
 
 part 'check_status.mapper.dart';

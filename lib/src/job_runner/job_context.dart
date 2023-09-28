@@ -1,6 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 
-import '../../micro_ci.dart';
+import '../models/config/script/script.dart';
+import '../models/telegram/models/message.dart';
 
 part 'job_context.mapper.dart';
 

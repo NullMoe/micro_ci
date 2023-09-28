@@ -1,8 +1,8 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:path/path.dart';
 
-import '../../../../../tools/field_unwrapping_hook.dart';
-import '../../../../../tools/substitute_environment_variables.dart';
+import '../../../../../../tools/field_unwrapping_hook.dart';
+import '../../../../../../tools/substitute_environment_variables.dart';
 
 part 'collect_artifacts_file.mapper.dart';
 part 'artifact_file_types/collect_artifacts_file_object.dart';
