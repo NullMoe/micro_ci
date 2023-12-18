@@ -5,5 +5,8 @@
 # Environment variables
 .env
 
+# Configuration
+config.yaml
+
 # Directories created by program
 working_directories

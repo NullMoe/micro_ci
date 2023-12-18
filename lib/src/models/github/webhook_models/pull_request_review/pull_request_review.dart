@@ -14,6 +14,6 @@ sealed class WebHookPullRequestReview extends WebHookPayload with WebHookPullReq
   @override
   String get fullName;
 
-  /// TODO: this is bad.
+  /// This is bad. Edit: this is actually acceptable.
   static bool _isPullRequestReviewEvent(Object? value) => value is Map && value.containsKey('pull_request');
 }
