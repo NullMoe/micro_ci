@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Dart",
+				"type": "dart",
+				"request": "launch",
+				"program": "bin/server.dart",
+				"args": [
+					"0",
+				]
+			}
+		],
+		"compounds": []
+	},
+	"settings": {
+		"cSpell.words": [
+			"Hmac",
+			"Metaproperties"
+		]
+	}
+}
