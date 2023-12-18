@@ -1,0 +1,152 @@
+version: 1.0.0
+
+# global env provided to all tasks:
+# BUILD_STATUS - previous task status, if none - 0
+#  0 - ok, otherwise error code from last task (non zero exit code)
+#
+# BASE_BRANCH
+# BASE_SHA
+# BASE_REPO_FULL_NAME
+# HEAD_BRANCH
+# HEAD_SHA
+# HEAD_REPO_FULL_NAME
+
+
+
+# ignored, but part of schema
+templates:
+  build_flutter: &build_flutter
+    queue_mode: restart
+      # restart - stop task and mark it failed
+      # queue (default) - add to queue
+
+    tasks:
+      # if task errors execution skips until on_error encountered
+      # then execution state is reset
+      # that means if there was no error in on_error block then blocks after it
+      # will execute, or if error occurred in on_error block we continue to next
+      # on_error, so you can catch if on_error errors.
+      - name: Update commit status
+        # on_error: false # Implicit
+        script: # String or Object.
+          - builtin_action:
+              name: apply_check_status # Discriminator key.
+              options:
+                check_status:
+                  state: pending # One of: error, failure, pending, success.
+                  context: ci_test/Build # Optional
+                  description: Build started. # Optional. String
+                  target_url: null # Optional. String, url
+      - name: Sending telegram message
+        script:
+          - builtin_action:
+              name: tg_msg
+              options:
+                chat_id: -4059563862
+                type: msg
+                message: |
+                  Build started at $HEAD_REPO_FULL_NAME
+                  Branch: $HEAD_BRANCH
+                  Commit: $HEAD_SHA
+      - name: Run shell commands
+        script: # All scripts are executed in [server.exe Directory]/[job's working_directory name]
+          - docker compose run builder > build_logs.txt
+      - name: Collect and send artifacts
+        script:
+          - builtin_action: # Saving paths to artifacts or copying them to storage.
+              name: collect_artifacts
+              options:
+                files: # String or Object.
+                  - file:
+                      path: build_logs.txt
+                      name: build_logs.txt # Optional.
+                      # store: false # Implicit.
+                        # true -> marks file as artifact and copies file to working_directory/__artifacts folder.
+                        # false -> marks file as artifact without copying it.
+                      caption: Logs of 'docker compose up' command. # Optional.
+                        # Used in telegram post_artifacts
+                  - file:
+                      path: apk/app-release.apk
+                      name: AppRelease-${HEAD_SHA}.apk
+                      caption: Release file.
+                  - file:
+                      path: apk/app-release.apk.sha1
+                      name: AppRelease-${HEAD_SHA}.apk.sha1
+                      caption: Release file sha1.
+                  - file:
+                      path: non-existing-file.txt
+                      caption: Caption.
+                      # name: file
+          - builtin_action: # Sending all artifacts.
+              name: tg_msg
+              options:
+                type: post_artifacts
+                chat_id: -4059563862
+                message: |
+                  Artifacts:
+      - name: On error
+        on_error: true
+        script:
+          - echo ERROR!
+          - builtin_action:
+              name: tg_msg
+              options:
+                chat_id: -4059563862
+                type: post_error_log
+          - builtin_action:
+              name: apply_check_status
+              options:
+                check_status:
+                  state: failure
+                  context: ci_test/Build
+                  description: Build failed.
+          - 'false'
+      - name: Update commit status
+        script:
+          - builtin_action:
+              name: apply_check_status
+              options:
+                check_status:
+                  state: success
+                  context: ci_test/Build
+                  description: Build done..
+
+
+jobs:
+  build_master:
+    working_directory: build_master # Required.
+      # Can be absolute.
+    artifacts_directory: release_artifacts # Default '__artifacts'.
+      # Relative to working_directory or absolute.
+    # env_mode: inherit # Implicit. Enum: replace, inherit.
+    # repositories: # Will accept any repository if empty.
+    #   - nullmoe/micro_ci
+    env: # Optional.
+      - TOKEN=123
+    events: # Required
+      - push_commit:
+          head: # Branches where commit originates.
+            - master # Glob pattern.
+    <<: *build_flutter
+
+  build_prs:
+    working_directory: build_dev
+    env: # Optional.
+      - TOKEN=123
+    events:
+      - local_review:
+          head: # From.
+            - dev/*
+            - greed
+          base: # Optional. Into.
+            - master
+    <<: *build_flutter
+
+  build_dev_branches:
+    working_directory: build_dev
+    events:
+      - push_commit:
+          head: # Branches where commit originates.
+            - dev/*
+            - qa/{master,dev}
+    <<: *build_flutter
